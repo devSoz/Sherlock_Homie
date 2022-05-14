@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {AppRegistry, StyleSheet, View, Button} from 'react-native';
 
-import AddFaces from '../../Components/AddFaces';
+import SimilarFaces from '../../Components/SimilarFaces';
 
 const image_picker_options = {
   title: 'Select Photo',
@@ -17,10 +17,13 @@ const image_picker_options = {
 //the API Key that you got from Microsoft Azure
 const api_key = '7b8131f86ba64d68bcc5fe806d44974c';
 
-const RNSimilar = () => {
+const FaceRecognition = () => {
   return (
     <View style={styles.container}>
-      <AddFaces imagePickerOptions={image_picker_options} apiKey={api_key} />
+      <SimilarFaces
+        imagePickerOptions={image_picker_options}
+        apiKey={api_key}
+      />
     </View>
   );
 };
@@ -34,5 +37,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RNSimilar;
+export default FaceRecognition;
 //AppRegistry.registerComponent('RNSimilar', () => RNSimilar);

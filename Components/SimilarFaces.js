@@ -6,176 +6,120 @@ import {
   Image,
   TextInput,
   ScrollView,
+  PermissionsAndroid,
+  Button,
 } from 'react-native';
+import {
+  API_BASE_URL,
+  API_KEY,
+  FACELIST_ID,
+  FACELIST_NAME,
+} from '../Utils/Constants';
+import React, {Component, useState} from 'react';
+import {FACE_STORE} from '../Mobx/FACE_STORE';
+import Requestor from '../Lib/Requestor';
+import {launchCamera} from 'react-native-image-picker';
 
-import React, {Component} from 'react';
+const SimilarFaces = () => {
+  const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
+  const [Similar_photo, setSimilar_photo] = useState('');
+  let options = {
+    title: 'Select Photo',
+    takePhotoButtonTitle: 'Take Photo...',
+    chooseFromLibraryButtonTitle: 'Choose from Library...',
+    cameraType: 'back',
+    mediaType: 'photo',
+    maxWidth: 480,
+    quality: 1,
+    noData: false,
+    includeBase64: true,
+  };
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'App Camera Permission',
+          message: 'App needs access to your camera ',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Camera permission given');
+        LaunchCam();
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
 
-import NativeModules, {ImagePickerManager} from 'NativeModules';
-import Button from 'react-native-button';
-
-import Requestor from '../lib/Requestor';
-
-let facelist_id = 'facelist_005';
-let facelist_data = {
-  name: 'My 5th facelist',
-};
-
-let face_api_base_url = 'https://sherlock-homie.cognitiveservices.azure.com/';
-
-export default class SimilarFaces extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      photo_style: {
-        width: 480,
-        height: 480,
-      },
-      photo: null,
-      similar_photo: null,
-      message: '',
-    };
-  }
-
-  render() {
-    return (
-      <ScrollView>
-        <View style={styles.container}>
-          <Button
-            containerStyle={styles.button}
-            onPress={this._createFaceList.bind(this)}>
-            Create Face List
-          </Button>
-
-          <Image
-            style={this.state.photo_style}
-            source={this.state.photo}
-            resizeMode={'contain'}
-          />
-
-          <Button
-            containerStyle={styles.button}
-            onPress={this._pickImage.bind(this)}>
-            Pick Image
-          </Button>
-
-          <TextInput
-            style={styles.text_input}
-            onChangeText={this._changeName.bind(this)}
-            value={this.state.name}
-            placeholder={'name'}
-          />
-
-          <Button
-            containerStyle={styles.button}
-            onPress={this._addFaceToFaceList.bind(this)}>
-            Add Face to Face List
-          </Button>
-
-          <Button
-            containerStyle={styles.button}
-            onPress={this._getSimilarFace.bind(this)}>
-            Get Similar Face
-          </Button>
-
-          <Image
-            style={this.state.photo_style}
-            source={this.state.similar_photo}
-            resizeMode={'contain'}
-          />
-
-          <Text style={styles.message}>{this.state.message}</Text>
-        </View>
-      </ScrollView>
-    );
-  }
-
-  _changeName(text) {
-    this.setState({
-      name: text,
+  const LaunchCam = async () => {
+    launchCamera(options, res => {
+      // console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        console.log('response uri', res.assets[0].uri);
+        FACE_STORE.setName(name);
+        FACE_STORE.setPhotoData(res.assets[0].base64);
+        FACE_STORE.setURI({uri: res.assets[0].uri});
+        getSimilarFace();
+        // setURI(res.uri);
+        /*this.setState({
+        photo_style: {
+          width: res.width,
+          height: res.height,
+        },
+        photo: source,
+        photo_data: res.data,
+      });*/
+        //recognizeAPI(res.assets[0].uri);
+        //this.setState({
+        // filePath: res,
+        //  fileData: res.data,
+        //  fileUri: res.uri,
+        //});
+      }
     });
-  }
+  };
 
-  _pickImage() {
-    ImagePickerManager.showImagePicker(
-      this.props.imagePickerOptions,
-      response => {
-        if (response.error) {
-          alert('Error getting the image. Please try again.');
-        } else {
-          let source = {uri: response.uri};
-
-          this.setState({
-            photo_style: {
-              width: response.width,
-              height: response.height,
-            },
-            photo: source,
-            photo_data: response.data,
-          });
-        }
-      },
-    );
-  }
-
-  _createFaceList() {
-    Requestor.request(
-      face_api_base_url + '/face/v1.0/facelists/' + facelist_id,
-      'PUT',
-      this.props.apiKey,
-      JSON.stringify(facelist_data),
-    ).then(function (res) {
-      alert('Face List Created!');
-    });
-  }
-
-  _addFaceToFaceList() {
-    var user_data = {
-      name: this.state.name,
-      filename: this.state.photo.uri,
-    };
-
+  const getSimilarFace = async () => {
     Requestor.upload(
-      face_api_base_url +
-        '/face/v1.0/facelists/' +
-        facelist_id +
-        '/persistedFaces',
-      this.props.apiKey,
-      this.state.photo_data,
-      {
-        userData: JSON.stringify(user_data),
-      },
-    ).then(res => {
-      alert('Face was added to face list!');
-    });
-  }
-
-  _getSimilarFace() {
-    Requestor.upload(
-      face_api_base_url + '/face/v1.0/detect',
-      this.props.apiKey,
-      this.state.photo_data,
+      API_BASE_URL + '/face/v1.0/detect',
+      API_KEY,
+      FACE_STORE.getPhotoData,
     ).then(facedetect_res => {
+      console.log('response detect' + JSON.stringify(facedetect_res));
       let face_id = facedetect_res[0].faceId;
 
       let data = {
         faceId: face_id,
-        faceListId: facelist_id,
+        faceListId: FACELIST_ID,
         maxNumOfCandidatesReturned: 2,
       };
-
+      console.log('faceid', JSON.stringify(data));
       Requestor.request(
-        face_api_base_url + '/face/v1.0/findsimilars',
+        API_BASE_URL + '/face/v1.0/findsimilars',
         'POST',
-        this.props.apiKey,
+        API_KEY,
         JSON.stringify(data),
       ).then(similarfaces_res => {
-        let similar_face = similarfaces_res[1];
-
+        let similar_face = similarfaces_res[0];
+        console.log('similar ', JSON.stringify(similar_face));
         Requestor.request(
-          face_api_base_url + '/face/v1.0/facelists/' + facelist_id,
+          API_BASE_URL + '/face/v1.0/facelists/' + FACELIST_ID,
           'GET',
-          this.props.apiKey,
+          API_KEY,
         ).then(facelist_res => {
           let user_data = {};
           facelist_res['persistedFaces'].forEach(face => {
@@ -183,20 +127,42 @@ export default class SimilarFaces extends Component {
               user_data = JSON.parse(face.userData);
             }
           });
-
-          this.setState({
-            similar_photo: {uri: user_data.filename},
-            message:
-              'Similar to: ' +
+          setSimilar_photo(user_data.filename);
+          setMessage(
+            'Similar to:' +
               user_data.name +
               ' with confidence of ' +
               similar_face.confidence,
-          });
+          );
+          /* this.setState({
+          similar_photo: {uri: user_data.filename},
+          message:
+            'Similar to: ' +
+            user_data.name +
+            ' with confidence of ' +
+            similar_face.confidence,
+        });*/
         });
       });
     });
-  }
-}
+  };
+
+  return (
+    <ScrollView>
+      <View style={styles.container}>
+        <Button
+          containerStyle={styles.button}
+          onPress={requestCameraPermission}
+          title="ar Face"
+        />
+
+        <Image source={FACE_STORE.getURI} resizeMode={'contain'} />
+
+        <Text style={styles.message}>{message}</Text>
+      </View>
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -221,5 +187,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-AppRegistry.registerComponent('SimilarFaces', () => SimilarFaces);
+export default SimilarFaces;
+//AppRegistry.registerComponent('SimilarFaces', () => SimilarFaces);
