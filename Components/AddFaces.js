@@ -12,7 +12,7 @@ import {
 import {
   API_BASE_URL,
   API_KEY,
-  FACELIST_ID,
+  PERSON_GRP_ID,
   FACELIST_NAME,
 } from '../Utils/Constants';
 import React, {Component, useState} from 'react';
@@ -77,40 +77,14 @@ const AddFaces = () => {
         FACE_STORE.setPhotoData(res.assets[0].base64);
         FACE_STORE.setURI({uri: res.assets[0].uri});
         AddFaceToFaceList();
-
-        /*var user_data = {
-          name: FACE_STORE.getName,
-          filename: FACE_STORE.getURI,
-        };
-
-        Requestor.upload(
-          API_BASE_URL +
-            '/face/v1.0/facelists/' +
-            FACELIST_ID +
-            '/persistedFaces',
-          API_KEY,
-          FACE_STORE.getPhotoData, //res.assets[0].base64,
-          {
-            userData: JSON.stringify(user_data),
-          },
-        )
-
-          .then(res => {
-            console.log('response test', JSON.stringify(res));
-            console.log('response last');
-            alert('Face was added to face list!');
-          })
-          .catch(error => {
-            console.log(JSON.stringify(error)); //JSON.stringify(error));
-          });*/
       }
     });
   };
 
   const createFaceList = () => {
     Requestor.request(
-      API_BASE_URL + 'face/v1.0/facelists/' + FACELIST_ID,
-      'PUT',
+      API_BASE_URL + 'face/v1.0/facelists/' + PERSON_GRP_ID + '/persons',
+      'POST',
       API_KEY,
       JSON.stringify(FACELIST_NAME),
     ).then(function (res) {
@@ -121,114 +95,78 @@ const AddFaces = () => {
 
   const AddFaceToFaceList = () => {
     var user_data = {
-      name: FACE_STORE.getName,
-      filename: FACE_STORE.getURI,
-      photo_data: FACE_STORE.getPhotoData,
+      fn: 'Saddam',
+      ln: 'hussein',
+      alias: 'Sad-hus',
+      age: '70',
+      sex: 'M',
+      nat: 'Pakistan',
+      //aID: '1200 1200 1200 1200',
+      //pID: 'AYR346Q34K',
+      marks: 'Mole on left hand index finger, scar on the left cheek',
+      sev: 9,
+      ch: 2,
+      wa: 1, //Number of Outstanding Warrent
+      co: 1, //Number of conviction
+      ar: 1, //Number of arrests
+      fl: 1, //Has flight risk
+      height: '5.11 ft',
+      weight: '89 kg',
+      com: 'wheatish -brown',
+      eye: 'black',
+      p1: 'https://cdn.britannica.com/30/126130-004-89F2E69C.jpg',
+      p2: 'https://www.thefamouspeople.com/profiles/images/saddam-hussein-26.jpg',
+      p3: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Saddam_Hussein_in_1998.png/411px-Saddam_Hussein_in_1998.png',
+      cs: 'https://i.pinimg.com/736x/9d/08/b3/9d08b3076b91ccd3b9c4bf06fc017a89.jpg',
+      pid: 101, //parole officer id
+      //filename: FACE_STORE.getURI,
+      //photo_data: FACE_STORE.getPhotoData,
     };
-
-    Requestor.upload(
-      API_BASE_URL + '/face/v1.0/facelists/' + FACELIST_ID + '/persistedFaces',
+    let data = {
+      name: user_data.fn + ' ' + user_data.ln,
+      userData: JSON.stringify(user_data),
+    };
+    console.log('userdata:', JSON.stringify(data));
+    Requestor.request(
+      API_BASE_URL + '/face/v1.0/persongroups/' + PERSON_GRP_ID + '/persons',
+      'POST',
       API_KEY,
-      FACE_STORE.getPhotoData, //res.assets[0].base64,
-      {
-        userData: JSON.stringify(user_data),
-      },
+      JSON.stringify(data),
     )
-
       .then(res => {
-        console.log('response test', JSON.stringify(res));
-        console.log('response last');
-        alert('Face was added to face list!');
+        console.log('response addface', JSON.stringify(res));
+        // console.log('response last');
+        let personId = res.personId;
+        AddFace(personId, user_data.p1);
+        AddFace(personId, user_data.p2);
       })
       .catch(error => {
-        console.log(JSON.stringify(error)); //JSON.stringify(error));
-      });
-  };
-
-  const AddFaceToFaceListtemp = () => {
-    var user_data = {
-      name: FACE_STORE.getName,
-      filename: FACE_STORE.getURI,
-    };
-    console.log('response test', JSON.stringify(FACE_STORE.getPhotoData));
-    console.log('response test', JSON.stringify(user_data));
-    axios
-      .post(
-        API_BASE_URL + 'face/v1.0/facelists/' + FACELIST_ID + '/persistedFaces',
-
-        FACE_STORE.getPhotoData,
-
-        {
-          userData: JSON.stringify(user_data),
-        },
-      )
-      .then(res => {
-        console.log('response test', JSON.stringify(res));
-        alert('Face was added to face list!');
-      })
-      .catch(error => {
-        /* if (error.response) {
-      ACTIVITY_STORE.setErrorText(error.response.data.message);
-    } else if (error.request) {
-      ACTIVITY_STORE.setErrorText('Server Error');
-    }
-    CALENDAR_STORE.setError(true);
-    CALENDAR_STORE.setLoading(false);*/
         console.log(JSON.stringify(error));
       });
   };
 
-  const getSimilarFace = () => {
-    Requestor.upload(
-      API_BASE_URL + '/face/v1.0/detect',
+  const AddFace = (personId, url) => {
+    let data = {
+      url: url,
+    };
+
+    Requestor.request(
+      API_BASE_URL +
+        '/face/v1.0/persongroups/' +
+        PERSON_GRP_ID +
+        '/persons/' +
+        personId +
+        '/persistedFaces',
+      'POST',
       API_KEY,
-      photo_data,
-    ).then(facedetect_res => {
-      let face_id = facedetect_res[0].faceId;
-
-      let data = {
-        faceId: face_id,
-        faceListId: FACELIST_ID,
-        maxNumOfCandidatesReturned: 2,
-      };
-
-      /*Requestor.request(
-          API_BASE_URL + '/face/v1.0/findsimilars',
-          'POST',
-          API_KEY,
-          JSON.stringify(data),
-        ).then(similarfaces_res => {
-          let similar_face = similarfaces_res[1];
-  
-          Requestor.request(
-            API_BASE_URL + '/face/v1.0/facelists/' + facelist_id,
-            'GET',
-            API_KEY,
-          ).then(facelist_res => {
-            let user_data = {};
-            facelist_res['persistedFaces'].forEach(face => {
-              if (face.persistedFaceId == similar_face.persistedFaceId) {
-                user_data = JSON.parse(face.userData);
-              }
-            });
-            setSimilar_photo(user_data.filename);
-            setMessage(
-              'Similar to:' +
-                user_data.name +
-                ' with confidence of ' +
-                similar_face.confidence,
-            );
-            /* this.setState({
-              similar_photo: {uri: user_data.filename},
-              message:
-                'Similar to: ' +
-                user_data.name +
-                ' with confidence of ' +
-                similar_face.confidence,
-            });
-          });
-        });*/
-    });
+      JSON.stringify(data),
+    )
+      .then(res_addFace => {
+        console.log('response create face', JSON.stringify(res_addFace));
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
   };
 
   return (

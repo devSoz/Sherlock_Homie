@@ -7,6 +7,7 @@ class FaceData {
     uri: '',
     name: '',
     redirectUpdate: false,
+    face_Data: ''
   };
 
   reset = () => {
@@ -15,6 +16,7 @@ class FaceData {
     this.state.uri = '';
     this.state.name = '';
     this.state.redirectUpdate = false;
+    this.face_Data='';
   };
 
   setFaceID = val => {
@@ -33,6 +35,13 @@ class FaceData {
     return this.state.photo_data;
   }
 
+  setFaceData = val => {
+    this.state.face_Data = val;
+  };
+
+  get getFaceData() {
+    return this.state.face_Data;
+  }
   setURI = val => {
     this.state.uri = val;
   };
@@ -63,7 +72,8 @@ class FaceData {
       reset: action,
       setFaceID: action,
       getFaceID: computed,
-
+      setFaceData: action,
+      getFaceData: computed,
       setPhotoData: action,
       getPhotoData: computed,
 
