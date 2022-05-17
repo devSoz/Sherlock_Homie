@@ -8,8 +8,11 @@ import {
   ScrollView,
   Linking,
   PermissionsAndroid,
+  TouchableOpacity,
   Button,
 } from 'react-native';
+import LoaderPage from '../Components/LoadingScreen';
+import {observer} from 'mobx-react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   API_BASE_URL,
@@ -23,11 +26,13 @@ import {FACE_STORE} from '../Mobx/FACE_STORE';
 import Requestor from '../Lib/Requestor';
 import {launchCamera} from 'react-native-image-picker';
 import * as colors from '../Utils/color';
-const SimilarFaces = () => {
+
+const SimilarFaces = observer(() => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [Similar_photo, setSimilar_photo] = useState('');
-  FACE_STORE.setURI(require('../Images/person.png'));
+  // FACE_STORE.setURI(require('../Images/person.png'));
+
   let options = {
     title: 'Select Photo',
     takePhotoButtonTitle: 'Take Photo...',
@@ -41,6 +46,7 @@ const SimilarFaces = () => {
   };
   const requestCameraPermission = async () => {
     try {
+      FACE_STORE.setIsLoading(true);
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
@@ -56,15 +62,17 @@ const SimilarFaces = () => {
         LaunchCam();
       } else {
         console.log('Camera permission denied');
+        FACE_STORE.setIsLoading(false);
       }
     } catch (err) {
-      console.warn(err);
+      alert(JSON.stringify(err));
+      FACE_STORE.setIsLoading(false);
     }
   };
 
   const LaunchCam = async () => {
     launchCamera(options, res => {
-      // console.log('Response = ', res);
+      console.log('loading = ', FACE_STORE.getIsLoading);
       if (res.didCancel) {
         console.log('User cancelled image picker');
       } else if (res.error) {
@@ -73,12 +81,13 @@ const SimilarFaces = () => {
         console.log('User tapped custom button: ', res.customButton);
         alert(res.customButton);
       } else {
-        console.log('response uri', res.assets[0].uri);
         FACE_STORE.setName(name);
         FACE_STORE.setPhotoData(res.assets[0].base64);
         FACE_STORE.setURI({uri: res.assets[0].uri});
+        FACE_STORE.setIsVisbile(true);
         getSimilarFace();
       }
+      FACE_STORE.setIsLoading(false);
     });
   };
 
@@ -140,160 +149,176 @@ const SimilarFaces = () => {
           console.log(error);
         });
     });
+    FACE_STORE.setIsLoading(false);
   };
 
   return (
     <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.viewRow}>
-          <Button
-            containerStyle={styles.button}
-            onPress={requestCameraPermission}
-            title="Sherlockie"
-          />
-        </View>
-        <View style={[styles.viewRow, {marginTop: 10}]}>
+      {FACE_STORE.getLoading ? (
+        <LoaderPage />
+      ) : (
+        <View style={styles.container}>
+          <View
+            style={[
+              styles.viewRow,
+              {justifyContent: 'center', alignItems: 'center'},
+            ]}>
+            <TouchableOpacity
+              style={[styles.SubmitButtonStyle, {width: '80%'}]}
+              activeOpacity={0.5}
+              onPress={(requestCameraPermission, FACE_STORE.reset)}>
+              <Text style={styles.TextStyle}> Detect Image </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.viewRow, {marginTop: 10}]}>
+            <View style={styles.viewColumn}>
+              <Image
+                style={{
+                  height: 150,
+                  width: 150,
+                  borderRadius: 15,
+                }}
+                source={FACE_STORE.getURI}
+                resizeMode={'contain'}
+              />
+              <Text style={styles.text}>
+                Crime Index : {FACE_STORE.getFaceData.sev}
+              </Text>
+            </View>
+            <View style={[styles.viewColumn, {marginLeft: 10}]}>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>First Name: </Text>
+                <Text style={styles.text}>
+                  dfdsfsdf {FACE_STORE.getFaceData.fn}
+                </Text>
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Last Name: </Text>
+                <Text style={styles.text}>
+                  dfsdf {FACE_STORE.getFaceData.ln}
+                </Text>
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Alias: </Text>
+                <Text style={styles.text}>{FACE_STORE.getFaceData.alias}</Text>
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Age/Sex: </Text>
+                <Text style={styles.text}>
+                  : {FACE_STORE.getFaceData.age}, {FACE_STORE.getFaceData.sex}
+                </Text>
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Nationality: </Text>
+                <Text style={styles.text}>: {FACE_STORE.getFaceData.nat}</Text>
+              </View>
+              <Icon
+                style={[styles.textHeader, {color: '#ffffff'}]}
+                name="id-badge"
+                onPress={() => {
+                  Linking.openURL(FACE_STORE.getFaceData.cs);
+                }}>
+                Charge sheet
+              </Icon>
+            </View>
+          </View>
+          <Line head="Details" />
           <View style={styles.viewColumn}>
+            <View style={styles.viewRow}>
+              <Text style={styles.textHeader}>Identification Marks: </Text>
+              <Text style={styles.text}>{FACE_STORE.getFaceData.marks}</Text>
+            </View>
+            <View style={styles.viewRow}>
+              <View style={[styles.viewColumn, {width: '50%'}]}>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Height: </Text>
+                  <Text style={styles.text}>
+                    {FACE_STORE.getFaceData.height}
+                  </Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Weight: </Text>
+                  <Text style={styles.text}>
+                    {FACE_STORE.getFaceData.weight}
+                  </Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Eye Colour: </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.eye}</Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Complexion: </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.com}</Text>
+                </View>
+              </View>
+              <View style={[styles.viewColumn]}>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Charges: </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.ch}</Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Arrests: </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.ar}</Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Conviction: </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.co}</Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Outstanding Warrents: </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.wa}</Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Text style={styles.textHeader}>Flight Risk: </Text>
+                  <Text style={styles.text}> {FACE_STORE.getFaceData.fl}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <Line head="Sample" />
+          <View style={[styles.viewRow, {alignItems: 'center', marginTop: 15}]}>
             <Image
-              style={{
-                height: 150,
-                width: 150,
-                borderRadius: 15,
-              }}
-              source={FACE_STORE.getURI}
+              source={{uri: FACE_STORE.getFaceData.p2}}
               resizeMode={'contain'}
+              style={{
+                height: 100,
+                width: 100,
+                marginRight: 10,
+                borderRadius: 15,
+                flex: 0.33,
+              }}
             />
-            <Text style={styles.text}>
-              Crime Index : {FACE_STORE.getFaceData.sev}
-            </Text>
+            <Image
+              source={{uri: FACE_STORE.getFaceData.p2}}
+              resizeMode={'contain'}
+              style={{
+                height: 100,
+                width: 100,
+                marginRight: 10,
+                borderRadius: 15,
+                flex: 0.33,
+              }}
+            />
+            <Image
+              source={{uri: FACE_STORE.getFaceData.p3}}
+              resizeMode={'contain'}
+              style={{
+                height: 100,
+                width: 100,
+                marginRight: 10,
+                borderRadius: 15,
+                flex: 0.33,
+              }}
+            />
           </View>
-          <View style={[styles.viewColumn, {marginLeft: 10}]}>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>First Name: </Text>
-              <Text style={styles.text}>
-                dfdsfsdf {FACE_STORE.getFaceData.fn}
-              </Text>
-            </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Last Name: </Text>
-              <Text style={styles.text}>dfsdf {FACE_STORE.getFaceData.ln}</Text>
-            </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Alias: </Text>
-              <Text style={styles.text}>{FACE_STORE.getFaceData.alias}</Text>
-            </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Age/Sex: </Text>
-              <Text style={styles.text}>
-                : {FACE_STORE.getFaceData.age}, {FACE_STORE.getFaceData.sex}
-              </Text>
-            </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Nationality: </Text>
-              <Text style={styles.text}>: {FACE_STORE.getFaceData.nat}</Text>
-            </View>
-            <Icon
-              style={[styles.textHeader, {color: '#ffffff'}]}
-              name="id-badge"
-              onPress={() => {
-                Linking.openURL(FACE_STORE.getFaceData.cs);
-              }}>
-              Charge sheet
-            </Icon>
+          <View>
+            <Text style={styles.text}></Text>
           </View>
         </View>
-        <Line head="Details" />
-        <View style={styles.viewColumn}>
-          <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Identification Marks: </Text>
-            <Text style={styles.text}>{FACE_STORE.getFaceData.marks}</Text>
-          </View>
-          <View style={styles.viewRow}>
-            <View style={[styles.viewColumn, {width: '50%'}]}>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Height: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.height}</Text>
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Weight: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.weight}</Text>
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Eye Colour: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.eye}</Text>
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Complexion: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.com}</Text>
-              </View>
-            </View>
-            <View style={[styles.viewColumn]}>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Charges: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.ch}</Text>
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Arrests: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.ar}</Text>
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Conviction: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.co}</Text>
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Outstanding Warrents: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.wa}</Text>
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Flight Risk: </Text>
-                <Text style={styles.text}> {FACE_STORE.getFaceData.fl}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <Line head="Sample" />
-        <View style={[styles.viewRow, {alignItems: 'center', marginTop: 15}]}>
-          <Image
-            source={{uri: FACE_STORE.getFaceData.p2}}
-            resizeMode={'contain'}
-            style={{
-              height: 100,
-              width: 100,
-              marginRight: 10,
-              borderRadius: 15,
-              flex: 0.33,
-            }}
-          />
-          <Image
-            source={{uri: FACE_STORE.getFaceData.p2}}
-            resizeMode={'contain'}
-            style={{
-              height: 100,
-              width: 100,
-              marginRight: 10,
-              borderRadius: 15,
-              flex: 0.33,
-            }}
-          />
-          <Image
-            source={{uri: FACE_STORE.getFaceData.p3}}
-            resizeMode={'contain'}
-            style={{
-              height: 100,
-              width: 100,
-              marginRight: 10,
-              borderRadius: 15,
-              flex: 0.33,
-            }}
-          />
-        </View>
-        <View>
-          <Text style={styles.text}></Text>
-        </View>
-      </View>
+      )}
     </ScrollView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -360,6 +385,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
+  },
+  SubmitButtonStyle: {
+    marginTop: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginLeft: 30,
+    marginRight: 30,
+    marginBottom: 10,
+    backgroundColor: '#00BCD4',
+    borderRadius: 25,
+    borderWidth: 1,
+  },
+
+  TextStyle: {
+    color: colors.TextHeaderColor,
+    textAlign: 'center',
   },
 });
 export default SimilarFaces;

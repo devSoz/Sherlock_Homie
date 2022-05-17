@@ -11,3 +11,4 @@ export const Green = '#3e863e';
 export const Lightsteelblue = '#b0c4de';
 export const TextHeaderColor = 'black';
 export const TextColor = '#828282';
+export const PlaceHolderColor = '#3e863e';

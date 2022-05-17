@@ -38,15 +38,23 @@ import {NavigationContainer} from '@react-navigation/native';
 //import ReportScreen from './Screen/ReportScreen.js';
 import FaceCollection from './Screens/Face_Collection';
 import FaceRecognition from './Screens/FaceRecognition';
+import AdminNavigator from './Navigator/AdminNavigator';
 
 const App: () => Node = () => {
   const Tab = createBottomTabNavigator();
-
+  const actions = [
+    {
+      text: 'Add Face',
+      icon: require('./Images/person.png'),
+      name: 'bt_accessibility',
+      position: 1,
+    },
+  ];
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Facie" component={FaceCollection} />
         <Tab.Screen name="Sherlockie" component={FaceRecognition} />
+        <Tab.Screen name="Facie" component={FaceCollection} />
       </Tab.Navigator>
     </NavigationContainer>
   );

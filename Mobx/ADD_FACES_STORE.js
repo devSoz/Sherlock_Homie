@@ -1,15 +1,14 @@
 import {action, makeObservable, observable, computed} from 'mobx';
 
-class FaceData {
+class InputData {
   state = {
     faceid: '',
     photo_data: '',
     uri: '',
     name: '',
     redirectUpdate: false,
-    face_Data: '',
-    isLoading: true,
-    isVisible: false,
+    input_data: '',
+    isLoading: false,
   };
 
   reset = () => {
@@ -19,8 +18,7 @@ class FaceData {
     this.state.name = '';
     this.state.redirectUpdate = false;
     this.state.isLoading = false;
-    this.state.isVisible = false;
-    this.face_Data = '';
+    this.input_data = '';
   };
 
   setFaceID = val => {
@@ -39,12 +37,12 @@ class FaceData {
     return this.state.photo_data;
   }
 
-  setFaceData = val => {
-    this.state.face_Data = val;
+  setInputData = val => {
+    this.state.input_data = val;
   };
 
-  get getFaceData() {
-    return this.state.face_Data;
+  get getInputData() {
+    return this.state.input_data;
   }
   setURI = val => {
     this.state.uri = val;
@@ -78,22 +76,14 @@ class FaceData {
     return this.state.isLoading;
   }
 
-  setIsVisbile = val => {
-    this.state.isVisible = val;
-  };
-
-  get getIsVisible() {
-    return this.state.isVisible;
-  }
-
   constructor() {
     makeObservable(this, {
       state: observable,
       reset: action,
       setFaceID: action,
       getFaceID: computed,
-      setFaceData: action,
-      getFaceData: computed,
+      setInputData: action,
+      getInputData: computed,
       setPhotoData: action,
       getPhotoData: computed,
 
@@ -102,12 +92,10 @@ class FaceData {
       setIsLoading: action,
       getIsLoading: computed,
 
-      setIsVisbile: action,
-      getIsVisible: computed,
       setName: action,
       getName: computed,
     });
   }
 }
 
-export const FACE_STORE = new FaceData();
+export const FACE_STORE = new InputData();

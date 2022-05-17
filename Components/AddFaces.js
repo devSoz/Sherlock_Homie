@@ -9,6 +9,7 @@ import {
   PermissionsAndroid,
   Button,
 } from 'react-native';
+import * as colors from '../Utils/color';
 import {
   API_BASE_URL,
   API_KEY,
@@ -16,14 +17,51 @@ import {
   FACELIST_NAME,
 } from '../Utils/Constants';
 import React, {Component, useState} from 'react';
-import {FACE_STORE} from '../Mobx/FACE_STORE';
+import {ADD_FACES_STORE} from '../Mobx/ADD_FACES_STORE';
 
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import Line from '../Components/Line';
 import Requestor from '../Lib/Requestor';
 import {launchCamera} from 'react-native-image-picker';
 import axios from 'axios';
 
 const AddFaces = () => {
   const [name, setName] = useState('');
+  const [user_data, setUserData] = useState({
+    fn: '',
+    ln: '',
+    alias: '',
+    age: '',
+    sex: '',
+    nat: '',
+    //aID: '1200 1200 1200 1200',
+    //pID: 'AYR346Q34K',
+    marks: '',
+    sev: 0,
+    ch: 0,
+    wa: 0, //Number of Outstanding Warrent
+    co: 0, //Number of conviction
+    ar: 0, //Number of arrests
+    fl: '', //Has flight risk
+    height: '',
+    weight: '',
+    com: '',
+    eye: '',
+    p1: 'https://www.filmibeat.com/img/popcorn/profile_photos/silambarasan-20210414152430-3748.jpg',
+    p2: 'https://imgnew.outlookindia.com/uploadimage/library/16_9/16_9_5/IMAGE_1645696154.jpg',
+    p3: 'https://igimages.gumlet.io/tamil/home/simbu-11122021a.jpg?w=376&dpr=2.6',
+    cs: 'https://coimages.sciencemuseumgroup.org.uk/images/155/194/medium_1991_5083_0004.jpg',
+    pid: 0,
+  });
+
+  const updateState = (key, value) => {
+    //alert(key);
+    setUserData(oldState => ({
+      ...oldState,
+      [key]: value,
+    }));
+  };
 
   let options = {
     title: 'Select Photo',
@@ -94,39 +132,15 @@ const AddFaces = () => {
   };
 
   const AddFaceToFaceList = () => {
-    var user_data = {
-      fn: 'Saddam',
-      ln: 'hussein',
-      alias: 'Sad-hus',
-      age: '70',
-      sex: 'M',
-      nat: 'Pakistan',
-      //aID: '1200 1200 1200 1200',
-      //pID: 'AYR346Q34K',
-      marks: 'Mole on left hand index finger, scar on the left cheek',
-      sev: 9,
-      ch: 2,
-      wa: 1, //Number of Outstanding Warrent
-      co: 1, //Number of conviction
-      ar: 1, //Number of arrests
-      fl: 1, //Has flight risk
-      height: '5.11 ft',
-      weight: '89 kg',
-      com: 'wheatish -brown',
-      eye: 'black',
-      p1: 'https://cdn.britannica.com/30/126130-004-89F2E69C.jpg',
-      p2: 'https://www.thefamouspeople.com/profiles/images/saddam-hussein-26.jpg',
-      p3: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Saddam_Hussein_in_1998.png/411px-Saddam_Hussein_in_1998.png',
-      cs: 'https://i.pinimg.com/736x/9d/08/b3/9d08b3076b91ccd3b9c4bf06fc017a89.jpg',
-      pid: 101, //parole officer id
-      //filename: FACE_STORE.getURI,
-      //photo_data: FACE_STORE.getPhotoData,
-    };
+    //parole officer id
+    //filename: FACE_STORE.getURI,
+    //photo_data: FACE_STORE.getPhotoData,
+
     let data = {
       name: user_data.fn + ' ' + user_data.ln,
       userData: JSON.stringify(user_data),
     };
-    console.log('userdata:', JSON.stringify(data));
+    console.log('data sent:', JSON.stringify(data));
     Requestor.request(
       API_BASE_URL + '/face/v1.0/persongroups/' + PERSON_GRP_ID + '/persons',
       'POST',
@@ -172,25 +186,230 @@ const AddFaces = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
+        <View style={styles.viewRow}>
+          <Button
+            containerStyle={styles.button}
+            onPress={createFaceList}
+            title="Create face list"
+          />
+
+          <Button
+            containerStyle={styles.button}
+            onPress={requestCameraPermission}
+            title="Add Face"
+          />
+        </View>
+        <View style={[styles.viewRow, {marginTop: 10}]}>
+          <View style={[styles.viewColumn, {marginLeft: 10}]}>
+            <View style={styles.viewRow}>
+              <Text style={styles.textHeader}>First Name: </Text>
+              <TextInput
+                style={styles.text_input}
+                onChangeText={val => updateState('fn', val)}
+                placeholder={'First Name'}
+                placeholderTextColor={'#777777'}
+              />
+            </View>
+            <View style={styles.viewRow}>
+              <Text style={styles.textHeader}>Last Name: </Text>
+              <TextInput
+                style={styles.text_input}
+                onChangeText={val => updateState('ln', val)}
+                placeholder={'Last Name'}
+                placeholderTextColor={'#777777'}
+              />
+            </View>
+            <View style={styles.viewRow}>
+              <Text style={styles.textHeader}>Alias: </Text>
+              <TextInput
+                style={styles.text_input}
+                onChangeText={val => updateState('alias', val)}
+                placeholder={'Alias'}
+                placeholderTextColor={'#777777'}
+              />
+            </View>
+            <View style={styles.viewRow}>
+              <Text style={styles.textHeader}>Age/Sex: </Text>
+              <TextInput
+                style={styles.text_inputNum}
+                onChangeText={val => updateState('age', val)}
+                placeholder={'Age'}
+                keyboardType="numeric"
+                placeholderTextColor={'#777777'}
+              />
+              <TextInput
+                style={styles.text_inputNum}
+                onChangeText={val => updateState('sex', val)}
+                placeholder={'Sex'}
+                placeholderTextColor={'#777777'}
+              />
+            </View>
+            <View style={styles.viewRow}>
+              <Text style={styles.textHeader}>Nationality: </Text>
+              <TextInput
+                style={styles.text_input}
+                onChangeText={val => updateState('nat', val)}
+                placeholder={'Nationality'}
+                placeholderTextColor={'#777777'}
+              />
+            </View>
+            <View style={styles.viewRow}>
+              <Text style={styles.textHeader}>Crime Index: </Text>
+              <TextInput
+                style={styles.text_inputNum}
+                onChangeText={val => updateState('cr', val)}
+                placeholder={'Crime Index'}
+                keyboardType="numeric"
+                placeholderTextColor={'#777777'}
+              />
+            </View>
+            <Icon
+              style={[styles.textHeader, {color: '#ffffff'}]}
+              name="id-badge"
+              onPress={() => {
+                Linking.openURL(FACE_STORE.getFaceData.cs);
+              }}>
+              Charge sheet
+            </Icon>
+          </View>
+        </View>
+        <Line head="Details" />
+        <View style={styles.viewColumn}>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Identification Marks: </Text>
+            <TextInput
+              style={[styles.text_input, {height: 100}]}
+              onChangeText={val => updateState('marks', val)}
+              placeholder={'Identification Marks'}
+              placeholderTextColor={'#777777'}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <View style={[styles.viewColumn, {width: '50%'}]}>
+              <View style={styles.viewRow}>
+                <TextInput
+                  style={styles.text_input}
+                  onChangeText={val => updateState('height', val)}
+                  placeholder={'Height'}
+                  placeholderTextColor={'#777777'}
+                />
+              </View>
+              <View style={styles.viewRow}>
+                <TextInput
+                  style={styles.text_input}
+                  onChangeText={val => updateState('weight', val)}
+                  placeholder={'Weight'}
+                  placeholderTextColor={'#777777'}
+                />
+              </View>
+              <View style={styles.viewRow}>
+                <TextInput
+                  style={styles.text_input}
+                  onChangeText={val => updateState('eye', val)}
+                  placeholder={'Eye Color'}
+                  placeholderTextColor={'#777777'}
+                />
+              </View>
+              <View style={styles.viewRow}>
+                <TextInput
+                  style={styles.text_input}
+                  onChangeText={val => updateState('Com', val)}
+                  placeholder={'Complexion'}
+                  placeholderTextColor={'#777777'}
+                />
+              </View>
+            </View>
+            <View style={[styles.viewColumn]}>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Charges: </Text>
+                <TextInput
+                  style={styles.text_inputNum}
+                  onChangeText={val => updateState('cg', val)}
+                  placeholder={'Charges'}
+                  placeholderTextColor={'#777777'}
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Arrests: </Text>
+                <TextInput
+                  style={styles.text_inputNum}
+                  onChangeText={val => updateState('ar', val)}
+                  placeholder={'Arrests'}
+                  placeholderTextColor={'#777777'}
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Conviction: </Text>
+                <TextInput
+                  style={styles.text_inputNum}
+                  onChangeText={val => updateState('co', val)}
+                  placeholder={'Convicion'}
+                  placeholderTextColor={'#777777'}
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Outstanding Warrents: </Text>
+                <TextInput
+                  style={styles.text_inputNum}
+                  onChangeText={val => updateState('wa', val)}
+                  placeholder={'OutStanding Warrants'}
+                  placeholderTextColor={'#777777'}
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={styles.viewRow}>
+                <Text style={styles.textHeader}>Flight Risk: </Text>
+                <TextInput
+                  style={styles.text_inputNum}
+                  onChangeText={val => updateState('fl', val)}
+                  placeholder={'Flight Risk'}
+                  placeholderTextColor={'#777777'}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+        <Line head="Sample" />
+        <View
+          style={[styles.viewColumn, {alignItems: 'center', marginTop: 15}]}>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Picture 1: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('p1', val)}
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Picture 2: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('p2', val)}
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Picture 3: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('p3', val)}
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Picture 3: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('cs', val)}
+            />
+          </View>
+        </View>
         <Button
           containerStyle={styles.button}
-          onPress={createFaceList}
-          title="Create face list"
-        />
-
-        <Image source={FACE_STORE.getURI} resizeMode={'contain'} />
-
-        <Button
-          containerStyle={styles.button}
-          onPress={requestCameraPermission}
-          title="Add Face"
-        />
-
-        <TextInput
-          style={styles.text_input}
-          onChangeText={name => setName(name)}
-          value={name}
-          placeholder={'Name'}
+          onPress={AddFaceToFaceList}
+          title="Submit"
         />
       </View>
     </ScrollView>
@@ -199,25 +418,85 @@ const AddFaces = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    marginLeft: 10,
+    marginRight: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
+    flex: 1,
+  },
+  image: {
+    width: '100px',
+    marginRight: '5',
+    height: '200px',
+    borderRadius: 8,
+    backgroundColor: 'white',
   },
   button: {
-    padding: 10,
+    padding: 0,
     margin: 20,
     height: 45,
     overflow: 'hidden',
     backgroundColor: 'white',
   },
   text_input: {
-    height: 40,
-    borderColor: 'gray',
+    marginLeft: 5,
+    height: 30,
+    margin: 7,
     borderWidth: 1,
-    backgroundColor: '#FFF',
+    padding: 2,
+    borderColor: 'gray',
+    color: colors.TextHeaderColor,
+    width: 200,
+  },
+
+  text_inputNum: {
+    height: 30,
+    margin: 7,
+    borderWidth: 1,
+    padding: 2,
+    borderColor: 'gray',
+    color: colors.TextHeaderColor,
+    width: 50,
+  },
+  textHeader: {
+    fontWeight: '500',
+    fontSize: 12,
+    marginTop: 5,
+    width: 100,
+    color: colors.TextHeaderColor,
+  },
+  text: {
+    fontWeight: '500',
+    fontSize: 12,
+    marginTop: 5,
+    color: colors.TextColor,
   },
   message: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  viewColumn1: {
+    flexDirection: 'column',
+    borderColor: 'red',
+    width: '30%',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    backgroundColor: 'red',
+    marginTop: 0,
+  },
+  viewColumn: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    marginTop: 2,
+  },
+
+  viewRow: {
+    flexDirection: 'row',
+
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
   },
 });
 
