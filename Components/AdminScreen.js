@@ -11,7 +11,7 @@ import {
   Button,
 } from 'react-native';
 import LoaderPage from '../Components/LoadingScreen';
-import {observer} from 'mobx-react';
+import {ver} from 'mobx-react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   API_BASE_URL,

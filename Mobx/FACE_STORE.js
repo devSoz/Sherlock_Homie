@@ -8,8 +8,10 @@ class FaceData {
     name: '',
     redirectUpdate: false,
     face_Data: '',
-    isLoading: true,
-    isVisible: false,
+    isLoading: false,
+    isStart: true,
+    isError: false,
+    Message: '',
   };
 
   reset = () => {
@@ -19,7 +21,9 @@ class FaceData {
     this.state.name = '';
     this.state.redirectUpdate = false;
     this.state.isLoading = false;
-    this.state.isVisible = false;
+    this.state.isStart = true;
+    this.isError = false;
+    this.Message = '';
     this.face_Data = '';
   };
 
@@ -78,14 +82,28 @@ class FaceData {
     return this.state.isLoading;
   }
 
-  setIsVisbile = val => {
-    this.state.isVisible = val;
+  setIsStart = val => {
+    this.state.isStart = val;
   };
 
-  get getIsVisible() {
-    return this.state.isVisible;
+  get getIsStart() {
+    return this.state.isStart;
+  }
+  setIsError = val => {
+    this.state.isError = val;
+  };
+
+  get getIsError() {
+    return this.state.isError;
   }
 
+  setMessage = val => {
+    this.state.Message = val;
+  };
+
+  get getMessage() {
+    return this.state.Message;
+  }
   constructor() {
     makeObservable(this, {
       state: observable,
@@ -102,10 +120,14 @@ class FaceData {
       setIsLoading: action,
       getIsLoading: computed,
 
-      setIsVisbile: action,
-      getIsVisible: computed,
+      setIsStart: action,
+      getIsStart: computed,
       setName: action,
       getName: computed,
+      setIsError: action,
+      getIsError: computed,
+      setMessage: action,
+      getMessage: computed,
     });
   }
 }

@@ -2,6 +2,12 @@ import React, {Component} from 'react';
 import {AppRegistry, StyleSheet, View, Button} from 'react-native';
 
 import SimilarFaces from '../../Components/SimilarFaces';
+import {FloatingAction} from 'react-native-floating-action';
+import SendMessage from '../../Components/SendMessage';
+import getContactsAPI from '../../Components/ContactsApi';
+import {API_KEY} from '../..//Utils/Constants';
+import {CONTACT_STORE} from '../../Mobx/CONTACT_STORE';
+import {observer} from 'mobx-react';
 
 const image_picker_options = {
   title: 'Select Photo',
@@ -13,16 +19,40 @@ const image_picker_options = {
   quality: 1,
   noData: false,
 };
-
-//the API Key that you got from Microsoft Azure
-const api_key = '7b8131f86ba64d68bcc5fe806d44974c';
-
 const FaceRecognition = () => {
+  console.log('main');
+
+  getContactsAPI();
+
+  const actions = [
+    {
+      text: 'Devipriya',
+      //  icon: require('../../Images/person.png'),
+      name: '8778672223',
+      //position: 2,
+    },
+    {
+      text: 'Sumathi',
+      // icon: require('../../Images/person.png'),
+      name: '9884240366',
+      // position: 2,
+    },
+  ];
+
+  //console.log('arrary', JSON.stringify(actions));
   return (
     <View style={styles.container}>
       <SimilarFaces
         imagePickerOptions={image_picker_options}
-        apiKey={api_key}
+        apiKey={API_KEY}
+      />
+      <FloatingAction
+        actions={CONTACT_STORE.getContactData}
+        onPressItem={name => {
+          //  if (name == 'bt_share') {
+          SendMessage('Share', name);
+          // }
+        }}
       />
     </View>
   );

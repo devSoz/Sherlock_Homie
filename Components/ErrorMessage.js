@@ -1,17 +1,9 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import * as colors from '../Utils/color';
-export default function Line({head}) {
+export default function ErrorMessage({message}) {
   return (
     <View style={{flexDirection: 'row', marginTop: 10}}>
-      <View
-        style={{
-          backgroundColor: 'black',
-          height: 2,
-          flex: 1,
-          alignSelf: 'center',
-        }}
-      />
       <Text
         style={{
           alignSelf: 'center',
@@ -19,7 +11,7 @@ export default function Line({head}) {
           fontSize: 10,
           color: colors.TextColor,
         }}>
-        {head}
+        {message}
       </Text>
       <View
         style={{

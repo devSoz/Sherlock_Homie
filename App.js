@@ -31,52 +31,17 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
 
 //import HomeScreen from './Screen/HomeScreen.js';
 //import ReportScreen from './Screen/ReportScreen.js';
-import FaceCollection from './Screens/Face_Collection';
+import Contact from './Screens/SettingsScreen/Contacts';
 import FaceRecognition from './Screens/FaceRecognition';
-import AdminNavigator from './Navigator/AdminNavigator';
+import FaceDetails from './Components/FaceDetails';
+import LoginScreen from './Screens/LoginScreen';
+import Navigator from './Navigation';
 
 const App: () => Node = () => {
-  const Tab = createBottomTabNavigator();
-  const actions = [
-    {
-      text: 'Add Face',
-      icon: require('./Images/person.png'),
-      name: 'bt_accessibility',
-      position: 1,
-    },
-  ];
-  return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Sherlockie" component={FaceRecognition} />
-        <Tab.Screen name="Facie" component={FaceCollection} />
-      </Tab.Navigator>
-    </NavigationContainer>
-  );
+  return <Navigator />;
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;

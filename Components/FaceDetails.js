@@ -9,7 +9,6 @@ import {
   PermissionsAndroid,
   Button,
 } from 'react-native';
-
 import * as colors from '../Utils/color';
 import {
   API_BASE_URL,
@@ -26,8 +25,10 @@ import Line from '../Components/Line';
 import Requestor from '../Lib/Requestor';
 import {launchCamera} from 'react-native-image-picker';
 import axios from 'axios';
+import PagerView from 'react-native-pager-view';
+import {wrap} from 'lodash';
 
-const AddFaces = () => {
+const FaceDetails = () => {
   const [user_data, setUserData] = useState({
     fn: '',
     ln: '',
@@ -184,200 +185,169 @@ const AddFaces = () => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.viewRow}>
-          <Button
-            containerStyle={styles.button}
-            onPress={createFaceList}
-            title="Create face list"
-          />
-
-          <Button
-            containerStyle={styles.button}
-            onPress={requestCameraPermission}
-            title="Add Face"
-          />
-        </View>
-        <View style={[styles.viewRow, {marginTop: 10}]}>
-          <View style={[styles.viewColumn, {marginLeft: 10}]}>
-            <View style={styles.viewRow}>
+    <PagerView style={styles.pagerView} initialPage={0}>
+      <View key="1">
+        <View style={styles.container}>
+          <View style={styles.card}>
+            <Text style={styles.textPageHeader}>Personal Details</Text>
+          </View>
+          <View style={[styles.viewRow]}>
+            <View style={[styles.viewColumn]}>
               <Text style={styles.textHeader}>First Name: </Text>
               <TextInput
-                style={styles.text_input}
+                style={styles.text_input1}
                 onChangeText={val => updateState('fn', val)}
-                placeholder={'First Name'}
-                placeholderTextColor={'#777777'}
               />
             </View>
-            <View style={styles.viewRow}>
+            <View style={styles.viewColumn}>
               <Text style={styles.textHeader}>Last Name: </Text>
               <TextInput
-                style={styles.text_input}
+                style={styles.text_input1}
                 onChangeText={val => updateState('ln', val)}
-                placeholder={'Last Name'}
-                placeholderTextColor={'#777777'}
               />
             </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Alias: </Text>
-              <TextInput
-                style={styles.text_input}
-                onChangeText={val => updateState('alias', val)}
-                placeholder={'Alias'}
-                placeholderTextColor={'#777777'}
-              />
-            </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Age/Sex: </Text>
-              <TextInput
-                style={styles.text_inputNum}
-                onChangeText={val => updateState('age', val)}
-                placeholder={'Age'}
-                keyboardType="numeric"
-                placeholderTextColor={'#777777'}
-              />
-              <TextInput
-                style={styles.text_inputNum}
-                onChangeText={val => updateState('sex', val)}
-                placeholder={'Sex'}
-                placeholderTextColor={'#777777'}
-              />
-            </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Nationality: </Text>
-              <TextInput
-                style={styles.text_input}
-                onChangeText={val => updateState('nat', val)}
-                placeholder={'Nationality'}
-                placeholderTextColor={'#777777'}
-              />
-            </View>
-            <View style={styles.viewRow}>
-              <Text style={styles.textHeader}>Crime Index: </Text>
-              <TextInput
-                style={styles.text_inputNum}
-                onChangeText={val => updateState('cr', val)}
-                placeholder={'Crime Index'}
-                keyboardType="numeric"
-                placeholderTextColor={'#777777'}
-              />
-            </View>
-            <Icon
-              style={[styles.textHeader, {color: '#ffffff'}]}
-              name="id-badge"
-              onPress={() => {
-                Linking.openURL(FACE_STORE.getFaceData.cs);
-              }}>
-              Charge sheet
-            </Icon>
           </View>
+          <View style={styles.viewColumn}>
+            <Text style={styles.textHeader}>Alias: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('alias', val)}
+            />
+          </View>
+          <View style={styles.viewColumn}>
+            <Text style={styles.textHeader}>Age/Sex: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('age', val)}
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={styles.text_input1}
+              onChangeText={val => updateState('sex', val)}
+            />
+          </View>
+          <View style={styles.viewColumn}>
+            <Text style={styles.textHeader}>Nationality: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('nat', val)}
+            />
+          </View>
+          <View style={styles.text_input}>
+            <Text style={styles.textHeader}>Crime Index: </Text>
+            <TextInput
+              style={styles.text_inputNum}
+              onChangeText={val => updateState('cr', val)}
+              keyboardType="numeric"
+            />
+          </View>
+          <Icon
+            style={[styles.textHeader, {color: '#ffffff'}]}
+            name="id-badge"
+            onPress={() => {
+              Linking.openURL(FACE_STORE.getFaceData.cs);
+            }}>
+            Charge sheet
+          </Icon>
         </View>
-        <Line head="Details" />
-        <View style={styles.viewColumn}>
-          <View style={styles.viewRow}>
+      </View>
+      <View key="2">
+        <View style={[styles.viewColumn]}>
+          <View style={styles.card}>
+            <Text style={styles.textPageHeader}>Personal Details</Text>
+          </View>
+          <View style={[styles.viewRow]}>
             <Text style={styles.textHeader}>Identification Marks: </Text>
             <TextInput
               style={[styles.text_input, {height: 100}]}
               onChangeText={val => updateState('marks', val)}
-              placeholder={'Identification Marks'}
-              placeholderTextColor={'#777777'}
               multiline
               numberOfLines={4}
             />
           </View>
           <View style={styles.viewRow}>
-            <View style={[styles.viewColumn, {width: '50%'}]}>
-              <View style={styles.viewRow}>
-                <TextInput
-                  style={styles.text_input}
-                  onChangeText={val => updateState('height', val)}
-                  placeholder={'Height'}
-                  placeholderTextColor={'#777777'}
-                />
-              </View>
-              <View style={styles.viewRow}>
-                <TextInput
-                  style={styles.text_input}
-                  onChangeText={val => updateState('weight', val)}
-                  placeholder={'Weight'}
-                  placeholderTextColor={'#777777'}
-                />
-              </View>
-              <View style={styles.viewRow}>
-                <TextInput
-                  style={styles.text_input}
-                  onChangeText={val => updateState('eye', val)}
-                  placeholder={'Eye Color'}
-                  placeholderTextColor={'#777777'}
-                />
-              </View>
-              <View style={styles.viewRow}>
-                <TextInput
-                  style={styles.text_input}
-                  onChangeText={val => updateState('Com', val)}
-                  placeholder={'Complexion'}
-                  placeholderTextColor={'#777777'}
-                />
-              </View>
-            </View>
-            <View style={[styles.viewColumn]}>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Charges: </Text>
-                <TextInput
-                  style={styles.text_inputNum}
-                  onChangeText={val => updateState('cg', val)}
-                  placeholder={'Charges'}
-                  placeholderTextColor={'#777777'}
-                  keyboardType="numeric"
-                />
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Arrests: </Text>
-                <TextInput
-                  style={styles.text_inputNum}
-                  onChangeText={val => updateState('ar', val)}
-                  placeholder={'Arrests'}
-                  placeholderTextColor={'#777777'}
-                  keyboardType="numeric"
-                />
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Conviction: </Text>
-                <TextInput
-                  style={styles.text_inputNum}
-                  onChangeText={val => updateState('co', val)}
-                  placeholder={'Convicion'}
-                  placeholderTextColor={'#777777'}
-                  keyboardType="numeric"
-                />
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Outstanding Warrents: </Text>
-                <TextInput
-                  style={styles.text_inputNum}
-                  onChangeText={val => updateState('wa', val)}
-                  placeholder={'OutStanding Warrants'}
-                  placeholderTextColor={'#777777'}
-                  keyboardType="numeric"
-                />
-              </View>
-              <View style={styles.viewRow}>
-                <Text style={styles.textHeader}>Flight Risk: </Text>
-                <TextInput
-                  style={styles.text_inputNum}
-                  onChangeText={val => updateState('fl', val)}
-                  placeholder={'Flight Risk'}
-                  placeholderTextColor={'#777777'}
-                />
-              </View>
-            </View>
+            <Text style={styles.textHeader}>Height: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('height', val)}
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Weight: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('weight', val)}
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Eye Color: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('eye', val)}
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Complexion: </Text>
+            <TextInput
+              style={styles.text_input}
+              onChangeText={val => updateState('Com', val)}
+            />
           </View>
         </View>
-        <Line head="Sample" />
-        <View
-          style={[styles.viewColumn, {alignItems: 'center', marginTop: 15}]}>
+      </View>
+      <View key="3">
+        <View style={[styles.viewColumn]}>
+          <View style={styles.card}>
+            <Text style={styles.textPageHeader}>Personal Details</Text>
+          </View>
+          <View style={[styles.viewRow]}>
+            <Text style={styles.textHeader}>Charges: </Text>
+
+            <TextInput
+              style={styles.text_inputNum}
+              onChangeText={val => updateState('cg', val)}
+              keyboardType="numeric"
+            />
+          </View>
           <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Arrests: </Text>
+            <TextInput
+              style={styles.text_inputNum}
+              onChangeText={val => updateState('ar', val)}
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Conviction: </Text>
+            <TextInput
+              style={styles.text_inputNum}
+              onChangeText={val => updateState('co', val)}
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Outstanding Warrents: </Text>
+            <TextInput
+              style={styles.text_inputNum}
+              onChangeText={val => updateState('wa', val)}
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Text style={styles.textHeader}>Flight Risk: </Text>
+            <TextInput
+              style={styles.text_inputNum}
+              onChangeText={val => updateState('fl', val)}
+            />
+          </View>
+        </View>
+      </View>
+      <View key="4">
+        <View style={[styles.viewColumn]}>
+          <View style={styles.card}>
+            <Text style={styles.textPageHeader}>URL of picture</Text>
+          </View>
+          <View style={[styles.viewRow]}>
             <Text style={styles.textHeader}>Picture 1: </Text>
             <TextInput
               style={styles.text_input}
@@ -398,32 +368,55 @@ const AddFaces = () => {
               onChangeText={val => updateState('p3', val)}
             />
           </View>
+        </View>
+      </View>
+      <View key="5">
+        <View style={[styles.viewColumn]}>
+          <View style={styles.card}>
+            <Text style={styles.textPageHeader}>Charge Sheet</Text>
+          </View>
+
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Picture 3: </Text>
+            <Text style={styles.textHeader}>Link: </Text>
             <TextInput
               style={styles.text_input}
               onChangeText={val => updateState('cs', val)}
             />
           </View>
+          <View style={styles.viewRow}>
+            <Button
+              containerStyle={styles.button}
+              onPress={AddFaceToFaceList}
+              title="Submit"
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Button
+              containerStyle={styles.button}
+              onPress={AddFaceToFaceList}
+              title="Submit"
+            />
+          </View>
+          <View style={styles.viewRow}>
+            <Button
+              containerStyle={styles.button}
+              onPress={AddFaceToFaceList}
+              title="Train"
+            />
+          </View>
         </View>
-        <Button
-          containerStyle={styles.button}
-          onPress={AddFaceToFaceList}
-          title="Submit"
-        />
       </View>
-    </ScrollView>
+    </PagerView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: 10,
-    marginRight: 10,
-    flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flex: 1,
+    flexDirection: 'column',
+    paddingBottom: 5,
   },
   image: {
     width: '100px',
@@ -445,9 +438,35 @@ const styles = StyleSheet.create({
     margin: 7,
     borderWidth: 1,
     padding: 2,
+    borderColor: colors.TextBoxColor,
+    color: colors.TextBoxColor,
+    borderRadius: 8,
     borderColor: 'gray',
-    color: colors.TextHeaderColor,
-    width: 200,
+
+    width: 150,
+  },
+  text_input1: {
+    marginLeft: 5,
+    height: 40,
+    margin: 7,
+    borderWidth: 1,
+    padding: 2,
+    borderColor: colors.TextBoxColor,
+    color: colors.TextBoxColor,
+    borderRadius: 8,
+    width: '100%',
+  },
+  card: {
+    marginVertical: 3,
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: colors.Card,
+    borderRadius: 8,
+    elevation: 1,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    width: '100%',
   },
 
   text_inputNum: {
@@ -457,11 +476,24 @@ const styles = StyleSheet.create({
     padding: 2,
     borderColor: 'gray',
     color: colors.TextHeaderColor,
-    width: 50,
+    width: 70,
+  },
+
+  textPageHeader: {
+    color: colors.TextHeaderColor,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  Title: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginTop: 5,
+    width: 100,
+    color: colors.TextHeaderColor,
   },
   textHeader: {
     fontWeight: '500',
-    fontSize: 12,
+    fontSize: 13,
     marginTop: 5,
     width: 100,
     color: colors.TextHeaderColor,
@@ -476,29 +508,25 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  viewColumn1: {
-    flexDirection: 'column',
-    borderColor: 'red',
-    width: '30%',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    backgroundColor: 'red',
-    marginTop: 0,
-  },
+
   viewColumn: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    justifyContent: 'flex-end',
-    marginTop: 2,
+    marginLeft: 5,
+    paddingBottom: 5,
   },
 
   viewRow: {
     flexDirection: 'row',
-
+    marginLeft: 15,
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
   },
+  pagerView: {
+    flex: 1,
+    backgroundColor: colors.BackgroundColor,
+  },
 });
 
-export default AddFaces;
-//AppRegistry.registerComponent('SimilarFaces', () => SimilarFaces);
+export default FaceDetails;
+//AppRegistry.registerComponent('RNSimilar', () => RNSimilar);

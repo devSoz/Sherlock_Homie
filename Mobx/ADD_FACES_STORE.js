@@ -8,7 +8,7 @@ class InputData {
     name: '',
     redirectUpdate: false,
     input_data: '',
-    isLoading: false,
+    isLoading: true,
   };
 
   reset = () => {

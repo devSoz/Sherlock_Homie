@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import LottieView from 'lottie-react-native';
-import LottieFile from '../loading.json';
+import LottieFile from '../Lottie/Starting_RecognitionPage.json';
 
 //import {HeaderHeight} from '../../utils/UI_CONSTANTS';
 //import {scale, verticalScale} from 'react-native-size-matters';

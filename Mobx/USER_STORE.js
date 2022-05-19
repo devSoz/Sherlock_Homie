@@ -5,8 +5,12 @@ class UserData {
     userName: '',
     userType: '',
     userEmailID: '',
-    userToken: '',
-    redirectUpdate: false,
+    name: '',
+    profilePic: '',
+    ID: '',
+    phoneNo: '',
+    dept: '',
+    error: '',
     //unique ID (Android ID)
     uniqueID: '',
   };
@@ -15,11 +19,38 @@ class UserData {
     this.state.userName = '';
     this.state.userType = '';
     this.state.userEmailID = '';
-    this.state.userToken = '';
-    this.state.redirectUpdate = false;
+    this.state.phoneNo = '';
+    this.state.ID = '';
+    this.state.profilePic = '';
+    this.state.name = '';
+    this.state.error = '';
     //unique ID (Android ID)
     this.state.uniqueID = '';
+    this.state.dept = '';
   };
+
+  setUserName = val => {
+    this.state.userName = val;
+  };
+  get getUserName() {
+    return this.state.userName;
+  }
+
+  setDept = val => {
+    this.state.dept = val;
+  };
+
+  get getDept() {
+    return this.state.dept;
+  }
+
+  setPassword = val => {
+    this.state.password = val;
+  };
+
+  get getPassword() {
+    return this.state.password;
+  }
 
   setUniqueId = val => {
     this.state.uniqueID = val;
@@ -37,34 +68,89 @@ class UserData {
     return this.state.userType;
   }
 
-  setUserToken = token => {
-    this.state.userToken = token;
+  setError = val => {
+    this.state.error = val;
   };
 
-  get getUserToken() {
-    return this.state.userToken;
+  get getError() {
+    return this.state.error;
   }
 
-  setRedirectUpdate = val => {
-    this.state.redirectUpdate = val;
+  setName = val => {
+    this.state.name = val;
   };
 
-  get getRedirectUpdate() {
-    return this.state.redirectUpdate;
+  get getName() {
+    return this.state.name;
+  }
+
+  setID = val => {
+    this.state.ID = val;
+  };
+
+  get getID() {
+    return this.state.ID;
+  }
+  setEmail = val => {
+    this.state.userEmailID = val;
+  };
+
+  get getEmail() {
+    return this.state.userEmailID;
+  }
+  setProfilePic = val => {
+    this.state.profilePic = val;
+  };
+
+  get getProfilePic() {
+    return this.state.profilePic;
+  }
+
+  setPhoneNo = val => {
+    this.state.phoneNo = val;
+  };
+
+  get getPhoneNo() {
+    return this.state.phoneNo;
   }
 
   constructor() {
     makeObservable(this, {
       state: observable,
       reset: action,
-      setUserToken: action,
-      getUserToken: computed,
+
+      getUserName: computed,
+      setUserName: action,
+
+      getPassword: computed,
+      setPassword: action,
+
+      setUserType: action,
+      getUserType: computed,
+
+      setName: action,
+      getName: computed,
+
+      setID: action,
+      getID: computed,
+
+      setProfilePic: action,
+      getProfilePic: computed,
+
+      setPhoneNo: action,
+      getPhoneNo: computed,
 
       setUniqueId: action,
       getUniqueId: computed,
 
-      setRedirectUpdate: action,
-      getRedirectUpdate: computed,
+      setDept: action,
+      getDept: computed,
+
+      setEmail: action,
+      getEmail: computed,
+
+      setError: action,
+      getError: computed,
     });
   }
 }

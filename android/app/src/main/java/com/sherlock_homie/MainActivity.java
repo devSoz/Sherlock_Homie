@@ -3,6 +3,8 @@ package com.sherlock_homie;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
+import android.content.Intent;
+import com.tkporter.sendsms.SendSMSPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -37,4 +39,11 @@ public class MainActivity extends ReactActivity {
       return reactRootView;
     }
   }
+
+  @Override
+public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    //probably some other stuff here
+    SendSMSPackage.getInstance().onActivityResult(requestCode, resultCode, data);
+}
 }
