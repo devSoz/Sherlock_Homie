@@ -1,11 +1,9 @@
-import React from 'react';
-import {View, Text} from 'react-native';
-import * as colors from '../../Utils/color';
 import {USER_STORE} from '../../Mobx/USER_STORE';
 import {BACKEND_API_BASE_URL, LOGIN_API} from '../../Utils/Constants';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as U from '../../Utils/StorageKeys';
 
-//export const getContactsAPI = async () => {
 export default function loginAPI(username, password) {
   axios
     .get(BACKEND_API_BASE_URL + LOGIN_API, {
@@ -38,5 +36,18 @@ const setUserData = (userData, username) => {
   USER_STORE.setProfilePic(userData[4]);
   USER_STORE.setUserType(userData[7]);
   USER_STORE.setDept(userData[10]);
-  USER_STORE.setEmail(userData[9]);
+  USER_STORE.setEmail(userData[8]);
+  AsyncStorage.setItem(U.USER_TYPE, USER_STORE.getName);
+  AsyncStorage.setItem(U.USER_KEY, USER_STORE.getUserName);
+  AsyncStorage.setItem(U.USER_FULL_NAME, USER_STORE.getName);
+  AsyncStorage.setItem(U.USER_EMAILID, USER_STORE.getEmail);
+  AsyncStorage.setItem(U.USER_PROFILE, USER_STORE.getProfilePic);
+  AsyncStorage.setItem(U.USER_ID, USER_STORE.getID);
+  AsyncStorage.setItem(U.USER_PHONE, USER_STORE.getPhoneNo);
+  AsyncStorage.setItem(U.USER_DEPT, USER_STORE.getDept);
+
+  console.log('check key', USER_STORE.getDept);
+
+  console.log('check key', AsyncStorage.getItem(U.USER_KEY));
+  console.log('img', AsyncStorage.getItem(U.USER_PROFILE));
 };

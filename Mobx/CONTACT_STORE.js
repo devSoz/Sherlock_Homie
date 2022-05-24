@@ -3,6 +3,7 @@ import {action, makeObservable, observable, computed} from 'mobx';
 class contact {
   state = {
     contactData: [],
+    isLoading: false,
   };
 
   reset = () => {
@@ -16,13 +17,21 @@ class contact {
   get getContactData() {
     return this.state.contactData;
   }
+  setIsLoading = val => {
+    this.state.isLoading = val;
+  };
 
+  get getIsLoading() {
+    return this.state.isLoading;
+  }
   constructor() {
     makeObservable(this, {
       state: observable,
       reset: action,
       setContactData: action,
       getContactData: computed,
+      setIsLoading: action,
+      getIsLoading: computed,
     });
   }
 }

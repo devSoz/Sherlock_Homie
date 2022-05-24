@@ -8,7 +8,7 @@ import {observer} from 'mobx-react';
 
 //export const getContactsAPI = async () => {
 export default function getContactsAPI() {
-  console.log(BACKEND_API_BASE_URL + GET_CONTACT_API);
+  CONTACT_STORE.setIsLoading(true);
   axios
     .get(BACKEND_API_BASE_URL + GET_CONTACT_API, {}, {timeout: 5000})
 
@@ -16,9 +16,12 @@ export default function getContactsAPI() {
       console.log('response detect' + JSON.stringify(res.data));
       console.log('response detect test' + JSON.stringify(res.data[0][2]));
       JSontoList(res.data);
+      CONTACT_STORE.setIsLoading(false);
+      console.log('inside', CONTACT_STORE.getIsLoading);
     })
     .catch(error => {
-      console.log(JSON.stringify(error));
+      CONTACT_STORE.setIsLoading(false);
+      console.log('error', CONTACT_STORE.getIsLoading);
     });
   //FACE_STORE.setIsLoading(false);
 }
@@ -27,9 +30,12 @@ const JSontoList = msg => {
   const contacts = [];
   msg.forEach(item => {
     const data = {
-      name: item[4],
-      text: item[3] + ' ' + item[2],
-      icon: "require('../Images/person.png')",
+      id: item[0],
+      dept: item[1],
+      phone: item[4],
+      position: item[5],
+      name: item[3] + ' ' + item[2],
+      icon: item[1],
     };
     contacts.push(data);
 

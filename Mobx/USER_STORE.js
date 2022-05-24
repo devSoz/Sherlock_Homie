@@ -2,31 +2,32 @@ import {action, makeObservable, observable, computed} from 'mobx';
 
 class UserData {
   state = {
-    userName: '',
-    userType: '',
-    userEmailID: '',
-    name: '',
-    profilePic: '',
-    ID: '',
-    phoneNo: '',
-    dept: '',
+    userName: null,
+    userType: null,
+    userEmailID: null,
+    name: null,
+    profilePic: null,
+    ID: null,
+    phoneNo: null,
+    dept: null,
     error: '',
     //unique ID (Android ID)
-    uniqueID: '',
+    uniqueID: null,
+    splash: true,
   };
 
   reset = () => {
-    this.state.userName = '';
-    this.state.userType = '';
-    this.state.userEmailID = '';
-    this.state.phoneNo = '';
-    this.state.ID = '';
-    this.state.profilePic = '';
-    this.state.name = '';
+    this.state.userName = null;
+    this.state.userType = null;
+    this.state.userEmailID = null;
+    this.state.phoneNo = null;
+    this.state.ID = null;
+    this.state.profilePic = null;
+    this.state.name = null;
     this.state.error = '';
     //unique ID (Android ID)
-    this.state.uniqueID = '';
-    this.state.dept = '';
+    this.state.uniqueID = null;
+    this.state.dept = null;
   };
 
   setUserName = val => {
@@ -114,6 +115,14 @@ class UserData {
     return this.state.phoneNo;
   }
 
+  setSplash = val => {
+    this.state.splash = val;
+  };
+
+  get getSplash() {
+    return this.state.splash;
+  }
+
   constructor() {
     makeObservable(this, {
       state: observable,
@@ -148,6 +157,9 @@ class UserData {
 
       setEmail: action,
       getEmail: computed,
+
+      setSplash: action,
+      getSplash: computed,
 
       setError: action,
       getError: computed,

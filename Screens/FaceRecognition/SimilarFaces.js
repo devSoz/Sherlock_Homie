@@ -1,19 +1,15 @@
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   View,
   Image,
-  TextInput,
   ScrollView,
   Linking,
   PermissionsAndroid,
   TouchableOpacity,
   Alert,
-  Button,
 } from 'react-native';
-import LoaderPage from '../Components/LoadingScreen';
-import StartingPage from '../Components/StartingPage';
+import StartingPage from '../../Components/StartingPage';
 import {observer} from 'mobx-react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
@@ -21,35 +17,24 @@ import {
   API_KEY,
   PERSON_GRP_ID,
   FACELIST_NAME,
-} from '../Utils/Constants';
-import Line from '../Components/Line';
+} from '../../Utils/Constants';
+import Line from '../../Components/Line';
 import React, {Component, useState} from 'react';
-import {FACE_STORE} from '../Mobx/FACE_STORE';
-import Requestor from '../Lib/Requestor';
+import {FACE_STORE} from '../../Mobx/FACE_STORE';
+import Requestor from '../../Lib/Requestor';
 import {launchCamera} from 'react-native-image-picker';
-import * as colors from '../Utils/color';
-import LoadingScreen from '../Components/LoadingScreen';
-
+import * as colors from '../../Utils/color';
+import LoadingScreen from '../../Components/LoadingScreen';
+import {getSimilarFacesAPI} from './SimilarFacesAPI';
+import {OPTIONS} from '../../Utils/Util';
 const SimilarFaces = observer(() => {
   const [name, setName] = useState('');
-  const [message, setMessage] = useState('');
-  const [Similar_photo, setSimilar_photo] = useState('');
-  //FACE_STORE.setIsStart(true);
-
-  let options = {
-    title: 'Select Photo',
-    takePhotoButtonTitle: 'Take Photo...',
-    chooseFromLibraryButtonTitle: 'Choose from Library...',
-    cameraType: 'back',
-    mediaType: 'photo',
-    maxWidth: 480,
-    quality: 1,
-    noData: false,
-    includeBase64: true,
+  const reset = () => {
+    FACE_STORE.setIsLoading(false);
+    FACE_STORE.getIsIdentified(false);
   };
   const requestCameraPermission = async () => {
     try {
-      //FACE_STORE.setIsLoading(true);
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
@@ -65,16 +50,16 @@ const SimilarFaces = observer(() => {
         LaunchCam();
       } else {
         console.log('Camera permission denied');
-        FACE_STORE.setIsLoading(false);
+        reset();
       }
     } catch (err) {
       alert(JSON.stringify(err));
-      FACE_STORE.setIsLoading(false);
+      reset();
     }
   };
 
   const LaunchCam = async () => {
-    launchCamera(options, res => {
+    launchCamera(OPTIONS, res => {
       console.log('loading = ', FACE_STORE.getIsLoading);
       if (res.didCancel) {
         console.log('User cancelled image picker');
@@ -82,99 +67,27 @@ const SimilarFaces = observer(() => {
       } else if (res.error) {
         FACE_STORE.setIsStart(true);
         console.log('ImagePicker Error: ', res.error);
-      } else if (res.customButton) {
-        FACE_STORE.setIsStart(true);
-        console.log('User tapped custom button: ', res.customButton);
-        alert(res.customButton);
       } else {
         FACE_STORE.setName(name);
         FACE_STORE.setPhotoData(res.assets[0].base64);
         FACE_STORE.setURI({uri: res.assets[0].uri});
         FACE_STORE.setIsStart(false);
         FACE_STORE.setIsLoading(true);
-        getSimilarFace();
+        getSimilarFacesAPI();
       }
-      //FACE_STORE.setIsLoading(false);
     });
   };
-
-  const showMessage = message => {
-    Alert.alert(
-      'Sherlock-Homie',
-      message,
-      [
-        {
-          text: 'Ok',
-          onPress: () => {
-            FACE_STORE.setIsStart(true);
-            FACE_STORE.setIsLoading(false);
-          },
-          style: 'cancel',
-        },
-      ],
-      {
-        cancelable: false,
-      },
-    );
+  const getStyle = val => {
+    if (val == 1) {
+      return {color: 'red'};
+    } else if (val <= 3) {
+      return {color: 'orange'};
+    } else return {color: 'black'};
   };
   const detectImage = () => {
     FACE_STORE.reset();
     console.log('start after btn', JSON.stringify(FACE_STORE.getIsStart));
     requestCameraPermission();
-  };
-  const getSimilarFace = async () => {
-    Requestor.upload(
-      API_BASE_URL + '/face/v1.0/detect',
-      API_KEY,
-      FACE_STORE.getPhotoData,
-    ).then(facedetect_res => {
-      console.log('response detect' + JSON.stringify(facedetect_res));
-      if (JSON.stringify(facedetect_res) == '[]') {
-        showMessage('No face detected');
-      } else {
-        let face_id = facedetect_res[0].faceId;
-
-        let faceIdList = [face_id];
-        let data = {
-          personGroupId: 'persongrp_2', //PERSON_GRP_ID,
-          faceIds: faceIdList,
-          maxNumOfCandidatesReturned: 1,
-        };
-        console.log('faceid', JSON.stringify(data));
-        Requestor.request(
-          API_BASE_URL + '/face/v1.0/identify',
-          'POST',
-          API_KEY,
-          JSON.stringify(data),
-        )
-          .then(similarfaces_res => {
-            console.log('similar ', JSON.stringify(similarfaces_res));
-            if (JSON.stringify(similarfaces_res[0].candidates) == '[]') {
-              showMessage('Face not found in the criminal database');
-            } else {
-              let similar_face = similarfaces_res[0].candidates[0].personId;
-              console.log('similar ', JSON.stringify(similar_face));
-              Requestor.request(
-                API_BASE_URL +
-                  '/face/v1.0/persongroups/' +
-                  'persongrp_2' +
-                  '/persons/' +
-                  similarfaces_res[0].candidates[0].personId,
-                'GET',
-                API_KEY,
-              ).then(facelist_res => {
-                console.log('info ', JSON.stringify(facelist_res.userData));
-                FACE_STORE.setFaceData(JSON.parse(facelist_res.userData));
-                FACE_STORE.setIsLoading(false);
-              });
-            }
-          })
-          .catch(function (error) {
-            showMessage(JSON.stringify(error.message));
-          });
-      }
-    });
-    //FACE_STORE.setIsLoading(false);
   };
 
   return (
@@ -188,10 +101,7 @@ const SimilarFaces = observer(() => {
           style={[styles.SubmitButtonStyle, {width: '80%'}]}
           activeOpacity={0.5}
           onPress={detectImage}>
-          <Text style={styles.TextStyle}>
-            {' '}
-            Detect Image + {JSON.stringify(FACE_STORE.getIsLoading)}
-          </Text>
+          <Text style={styles.TextStyle}> Detect Image</Text>
         </TouchableOpacity>
       </View>
       <ScrollView>
@@ -214,22 +124,23 @@ const SimilarFaces = observer(() => {
                   source={FACE_STORE.getURI}
                   resizeMode={'contain'}
                 />
-                <Text style={styles.text}>
+
+                <Text
+                  style={[
+                    styles.textCrime,
+                    getStyle(FACE_STORE.getFaceData.sev),
+                  ]}>
                   Crime Index : {FACE_STORE.getFaceData.sev}
                 </Text>
               </View>
               <View style={[styles.viewColumn, {marginLeft: 10}]}>
                 <View style={styles.viewRow}>
                   <Text style={styles.textHeader}>First Name: </Text>
-                  <Text style={styles.text}>
-                    dfdsfsdf {FACE_STORE.getFaceData.fn}
-                  </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.fn}</Text>
                 </View>
                 <View style={styles.viewRow}>
                   <Text style={styles.textHeader}>Last Name: </Text>
-                  <Text style={styles.text}>
-                    dfsdf {FACE_STORE.getFaceData.ln}
-                  </Text>
+                  <Text style={styles.text}>{FACE_STORE.getFaceData.ln}</Text>
                 </View>
                 <View style={styles.viewRow}>
                   <Text style={styles.textHeader}>Alias: </Text>
@@ -249,24 +160,18 @@ const SimilarFaces = observer(() => {
                     : {FACE_STORE.getFaceData.nat}
                   </Text>
                 </View>
-                <Icon
-                  style={[styles.textHeader, {color: '#ffffff'}]}
-                  name="id-badge"
-                  onPress={() => {
-                    Linking.openURL(FACE_STORE.getFaceData.cs);
-                  }}>
-                  Charge sheet
-                </Icon>
               </View>
             </View>
             <Line head="Details" />
             <View style={styles.viewColumn}>
               <View style={styles.viewRow}>
                 <Text style={styles.textHeader}>Identification Marks: </Text>
-                <Text style={styles.text}>{FACE_STORE.getFaceData.marks}</Text>
+                <Text style={[styles.text, {flexWrap: 'wrap', width: 200}]}>
+                  {FACE_STORE.getFaceData.marks}
+                </Text>
               </View>
               <View style={styles.viewRow}>
-                <View style={[styles.viewColumn, {width: '50%'}]}>
+                <View style={[styles.viewColumn]}>
                   <View style={styles.viewRow}>
                     <Text style={styles.textHeader}>Height: </Text>
                     <Text style={styles.text}>
@@ -287,7 +192,7 @@ const SimilarFaces = observer(() => {
                   </View>
                   <View style={styles.viewRow}>
                     <Text style={styles.textHeader}>Complexion: </Text>
-                    <Text style={styles.text}>
+                    <Text style={[styles.text, {flexWrap: 'wrap', width: 100}]}>
                       {FACE_STORE.getFaceData.com}
                     </Text>
                   </View>
@@ -408,7 +313,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 12,
     marginTop: 5,
+
     color: colors.TextColor,
+    flexWrap: 'wrap',
+  },
+  textCrime: {
+    fontWeight: '800',
+    fontSize: 14,
+    marginTop: 5,
+
+    color: colors.TextColor,
+    flexWrap: 'wrap',
   },
   message: {
     fontSize: 20,
@@ -442,8 +357,8 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     marginBottom: 10,
-    backgroundColor: '#00BCD4',
-    borderRadius: 25,
+    backgroundColor: colors.ButtonColor,
+    borderRadius: 15,
     borderWidth: 1,
   },
 
@@ -453,4 +368,3 @@ const styles = StyleSheet.create({
   },
 });
 export default SimilarFaces;
-//AppRegistry.registerComponent('SimilarFaces', () => SimilarFaces);

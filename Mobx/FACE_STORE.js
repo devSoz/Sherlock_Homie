@@ -9,6 +9,7 @@ class FaceData {
     redirectUpdate: false,
     face_Data: '',
     isLoading: false,
+    isIdentified: false,
     isStart: true,
     isError: false,
     Message: '',
@@ -23,6 +24,7 @@ class FaceData {
     this.state.isLoading = false;
     this.state.isStart = true;
     this.isError = false;
+    this.isIdentified = false;
     this.Message = '';
     this.face_Data = '';
   };
@@ -95,6 +97,13 @@ class FaceData {
 
   get getIsError() {
     return this.state.isError;
+  }
+  setIsIdentified = val => {
+    this.state.isIdentified = val;
+  };
+
+  get getIsIdentified() {
+    return this.state.isIdentified;
   }
 
   setMessage = val => {

@@ -26,15 +26,10 @@ const LoginScreen = observer(({navigation}) => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState();
 
-  const images = [
-    'https://images.hindustantimes.com/img/2021/12/30/1600x900/INDIA-WEATHER-RAIN-4_1640872723354_1640872733554.jpg',
-    'https://images.hindustantimes.com/img/2021/12/30/1600x900/INDIA-WEATHER-RAIN-4_1640872723354_1640872733554.jpg',
-  ];
-
   const login = () => {
     loginAPI(userName, password);
 
-    //navigation.push('Home');
+    navigation.push('Home');
   };
 
   return (
@@ -138,11 +133,7 @@ const LoginScreen = observer(({navigation}) => {
                 </Text>
               </TouchableOpacity>
               {/* <View style={{h}} /> */}
-              <TouchableOpacity
-                style={{marginTop: 3}}
-                onPress={() =>
-                  navigation.push('SignUp', {screenType: 'SIGN UP'})
-                }>
+              <TouchableOpacity style={{marginTop: 3}}>
                 <Text style={styles.text}>
                   Don't have an account?
                   <Text
@@ -158,6 +149,9 @@ const LoginScreen = observer(({navigation}) => {
                 </Text>
               </TouchableOpacity>
             </View>
+            <Text style={styles.subtitle}>
+              Note: Manage profile will be available in Ver 2.0
+            </Text>
             <View
               style={{
                 alignItems: 'flex-end',
@@ -209,7 +203,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: FONT,
   },
-
+  subtitle: {
+    fontSize: 12,
+    marginLeft: 20,
+    color: colors.TextColor,
+    marginTop: 15,
+  },
   text: {
     color: colors.TextHeaderColor,
 

@@ -1,182 +1,174 @@
+import React, {Component, useEffect, useState} from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
   View,
-  Image,
-  TextInput,
-  ScrollView,
-  Linking,
-  PermissionsAndroid,
+  Text,
+  FlatList,
   TouchableOpacity,
-  Alert,
-  Button,
+  StyleSheet,
+  Image,
+  StatusBar,
 } from 'react-native';
-import axios from 'axios';
+import LoadLottie from '../../Components/Lottie/LoadLottie';
+import getContactsAPI from '../../Components/ContactsApi';
+import {CONTACT_STORE} from '../../Mobx/CONTACT_STORE';
 import {observer} from 'mobx-react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {
-  API_BASE_URL,
-  API_KEY,
-  PERSON_GRP_ID,
-  FACELIST_NAME,
-} from '../../Utils/Constants';
-import Line from '../../Components/Line';
-import React, {Component, useState} from 'react';
-import {FACE_STORE} from '../../Mobx/FACE_STORE';
-import Requestor from '../../Lib/Requestor';
-import {launchCamera} from 'react-native-image-picker';
 import * as colors from '../../Utils/color';
-import LoadingScreen from '../../Components/LoadingScreen';
+import {scale, verticalScale} from 'react-native-size-matters';
+
+import Icon from 'react-native-vector-icons/FontAwesome5';
+const Item = ({item, onPress, backgroundColor, textColor}) => (
+  <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+    <View
+      style={{
+        flexDirection: 'row',
+
+        justifyContent: 'flex-start',
+      }}>
+      <View>
+        <Icon
+          style={{
+            width: scale(40),
+            borderRadius: 20,
+            color: colors.ButtonColor,
+            borderColor: 'red',
+
+            height: scale(40),
+            fontSize: 30,
+          }}
+          fill="black"
+          name={
+            item.dept == 'Police'
+              ? 'user-ninja'
+              : item.dept == 'Control Room'
+              ? 'user-shield'
+              : user - secret
+          }
+        />
+      </View>
+      <View>
+        <Text style={[styles.text]}>
+          {item.name} - {item.position}
+        </Text>
+        <Text style={[styles.subtext]}>{item.phone}</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+);
 
 const Contacts = observer(() => {
-  const [name, setName] = useState('');
-  const [message, setMessage] = useState('');
-  const [Similar_photo, setSimilar_photo] = useState('');
+  const [selectedId, setSelectedId] = useState(null);
 
-  const showMessage = message => {
-    Alert.alert(
-      'Sherlock-Homie',
-      message,
-      [
-        {
-          text: 'Ok',
-          onPress: () => {
-            FACE_STORE.setIsStart(true);
-            FACE_STORE.setIsLoading(false);
-          },
-          style: 'cancel',
-        },
-      ],
-      {
-        cancelable: false,
-      },
+  useEffect(() => {
+    if (CONTACT_STORE.getContactData == '') getContactsAPI();
+  });
+
+  FlatListFooter = () => {
+    return (
+      <View style={{flexDirection: 'column'}}>
+        <Text style={styles.title}>
+          List of contacts from various department to report suspects.
+        </Text>
+        <Text style={styles.subtitle}>
+          Note: Manage contacts will be available in Ver 2.0
+        </Text>
+      </View>
     );
   };
 
-  const getContact = async () => {
-    axios
-      .get(
-        'https://sherlock-homie-api.herokuapp.com/Contact',
-        {},
-        {timeout: 5000},
-      )
+  const renderItem = ({item}) => {
+    const backgroundColor = item.phone === selectedId ? '#6e3b6e' : '#f9c2ff';
+    const color = item.phone === selectedId ? 'white' : 'black';
 
-      .then(res => {
-        alert(JSON.stringify(res));
-        console.log('response detect' + JSON.stringify(res));
-      })
-      .catch(error => {
-        alert(JSON.stringify(error));
-        console.log(JSON.stringify(error));
-      });
-    //FACE_STORE.setIsLoading(false);
+    return (
+      <Item
+        item={item}
+        // onPress={() => setSelectedId(item.phone)}
+        //backgroundColor={{backgroundColor}}
+        textColor={{color}}
+      />
+    );
+  };
+  FlatListItemSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: '100%',
+          backgroundColor: '#000',
+        }}></View>
+    );
   };
 
-  return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: colors.BackgroundColor,
-      }}>
-      <View>
-        <TouchableOpacity
-          style={[styles.SubmitButtonStyle, {width: '80%'}]}
-          activeOpacity={0.5}
-          onPress={getContact}>
-          <Text style={styles.TextStyle}>
-            {' '}
-            Detect Image + {JSON.stringify(FACE_STORE.getIsLoading)}
-          </Text>
-        </TouchableOpacity>
+  FlatListHeader = () => {
+    return (
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Contact List</Text>
       </View>
+    );
+  };
+  return (
+    <View containerStyle={{borderTopWidth: 0, borderBottomWidth: 0}}>
+      {CONTACT_STORE.getIsLoading ? (
+        <LoadLottie lottieType="Loading" />
+      ) : (
+        <FlatList
+          data={CONTACT_STORE.getContactData}
+          renderItem={renderItem}
+          keyExtractor={item => item.phone}
+          ItemSeparatorComponent={FlatListItemSeparator}
+          ListHeaderComponent={FlatListHeader}
+          ListFooterComponent={FlatListFooter}
+        />
+      )}
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: 10,
-    marginRight: 10,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    backgroundColor: colors.BackgroundColor,
     flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
   },
-  image: {
-    width: '100px',
-    marginRight: '5',
-    height: '200px',
-    borderRadius: 8,
-    backgroundColor: 'white',
+  item: {
+    padding: 10,
+    marginVertical: 8,
+    marginHorizontal: 16,
   },
-  button: {
-    padding: 0,
-    margin: 20,
-    height: 45,
-    overflow: 'hidden',
-    backgroundColor: 'white',
-  },
-  text_input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    backgroundColor: colors.TextColor,
-  },
-  textHeader: {
+  title: {
+    fontSize: 14,
     fontWeight: '500',
-    fontSize: 12,
-    marginTop: 5,
+    marginLeft: 20,
+    marginRight: 20,
     color: colors.TextHeaderColor,
   },
   text: {
+    fontSize: 14,
+    marginLeft: 10,
     fontWeight: '500',
+    color: colors.TextHeaderColor,
+  },
+  subtext: {
     fontSize: 12,
-    marginTop: 5,
+    marginLeft: 10,
     color: colors.TextColor,
   },
-  message: {
+  headerText: {
+    color: colors.LightText,
+    textShadowOffset: {width: 1, height: 3},
     fontSize: 20,
-    fontWeight: 'bold',
-  },
-  viewColumn1: {
-    flexDirection: 'column',
-    borderColor: 'red',
-    width: '30%',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    backgroundColor: 'red',
-    marginTop: 0,
-  },
-  viewColumn: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-end',
-    marginTop: 2,
-  },
-
-  viewRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-end',
-  },
-  SubmitButtonStyle: {
-    marginTop: 10,
+    fontWeight: '500',
+    flex: 1,
+    alignSelf: 'center',
     paddingTop: 10,
     paddingBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
-    marginBottom: 10,
-    backgroundColor: '#00BCD4',
-    borderRadius: 25,
-    borderWidth: 1,
   },
-
-  TextStyle: {
-    color: colors.TextHeaderColor,
-    textAlign: 'center',
+  header: {
+    height: 55,
+    width: '100%',
+    backgroundColor: colors.ProfileBackgroundColor,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
+
 export default Contacts;
-//AppRegistry.registerComponent('SimilarFaces', () => SimilarFaces);
