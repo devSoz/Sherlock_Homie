@@ -10,6 +10,7 @@ class FaceData {
     face_Data: '',
     isLoading: false,
     isIdentified: false,
+    isReported: false,
     isStart: true,
     isError: false,
     Message: '',
@@ -25,6 +26,7 @@ class FaceData {
     this.state.isStart = true;
     this.isError = false;
     this.isIdentified = false;
+    this.isReported = false;
     this.Message = '';
     this.face_Data = '';
   };
@@ -84,6 +86,13 @@ class FaceData {
     return this.state.isLoading;
   }
 
+  setIsReported = val => {
+    this.state.isReported = val;
+  };
+
+  get getIsReported() {
+    return this.state.isReported;
+  }
   setIsStart = val => {
     this.state.isStart = val;
   };
@@ -128,6 +137,10 @@ class FaceData {
       getURI: computed,
       setIsLoading: action,
       getIsLoading: computed,
+      setIsIdentified: action,
+      getIsIdentified: computed,
+      setIsReported: action,
+      getIsReported: computed,
 
       setIsStart: action,
       getIsStart: computed,

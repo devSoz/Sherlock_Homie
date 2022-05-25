@@ -22,6 +22,7 @@ const showMessage = message => {
         onPress: () => {
           FACE_STORE.setIsStart(true);
           FACE_STORE.setIsLoading(false);
+          FACE_STORE.setIsIdentified(false);
         },
         style: 'cancel',
       },

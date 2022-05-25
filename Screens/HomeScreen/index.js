@@ -20,18 +20,11 @@ import FaceRecognition from '../FaceRecognition';
 import FaceDetails from '../Face_Collection';
 import Profile from '../SettingsScreen/Profile';
 
-import Train from '../Train/Train';
+import Report from '../ReportScreen';
 
 const App: () => Node = () => {
   const Tab = createBottomTabNavigator();
-  const actions = [
-    {
-      text: 'Add Face',
-      //icon: require('../../Images/'),
-      name: 'bt_accessibility',
-      position: 1,
-    },
-  ];
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -55,8 +48,8 @@ const App: () => Node = () => {
         }}
       />
       <Tab.Screen
-        name="Train"
-        component={Train}
+        name="View"
+        component={Report}
         options={{
           headerShown: false,
           tabBarIcon: ({color, size}) => (

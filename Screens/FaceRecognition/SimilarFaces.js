@@ -31,7 +31,8 @@ const SimilarFaces = observer(() => {
   const [name, setName] = useState('');
   const reset = () => {
     FACE_STORE.setIsLoading(false);
-    FACE_STORE.getIsIdentified(false);
+    FACE_STORE.setIsIdentified(false);
+    alert(FACE_STORE.getIsIdentified());
   };
   const requestCameraPermission = async () => {
     try {

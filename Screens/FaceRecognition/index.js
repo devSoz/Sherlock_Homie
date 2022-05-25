@@ -9,6 +9,7 @@ import Share from 'react-native-share';
 import {observer} from 'mobx-react';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
 import RNFetchBlob from 'rn-fetch-blob';
+import {ReportAPI} from './Report';
 
 const actions = [
   {
@@ -28,7 +29,10 @@ const actions = [
 const FaceRecognition = observer(() => {
   const onPress = name => {
     if (name == 'bt_share') shareFile();
-    else alert('This feature will be available in Ver 2.0');
+    else {
+      if (FACE_STORE.getIsReported) alert('Already reported');
+      else ReportAPI(1001, 'test', 1, 1);
+    }
   };
   const shareFile = () => {
     let imagePath = null;

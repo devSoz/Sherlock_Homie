@@ -12,7 +12,11 @@
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
+      
       android:theme="@style/AppTheme">
+<meta-data
+    android:name="com.google.android.geo.API_KEY"
+    android:value="AIzaSyC0OQnLS1f74Ak5hOB9eNUIwwd-n_B_RHA"/>
       <activity
         android:name=".MainActivity"
         android:screenOrientation="portrait" 
@@ -26,5 +30,6 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+      
     </application>
 </manifest>
