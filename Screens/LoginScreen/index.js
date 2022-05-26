@@ -1,27 +1,15 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
-import {scale, verticalScale} from 'react-native-size-matters';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {moderateScale, scale, verticalScale} from 'react-native-size-matters';
 import loginLottie from '../../Lottie/login.json';
-
-//import LottieFile from '../loading.json';
-
-import {
-  FONT,
-  fontSizeBig,
-  fontSizeMedium,
-  fontSizeVeryLarge,
-  paddingMedium,
-  paddingSmall,
-} from '../../Utils/Constants';
+import * as UI from '../../Utils/UIConstants';
 import LottieView from 'lottie-react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import * as colors from '../../Utils/color';
 import {TextInput} from 'react-native-element-textinput';
 import {USER_STORE} from '../../Mobx/USER_STORE';
-import LinearGradient from 'react-native-linear-gradient';
-import AutoScrolling from 'react-native-auto-scrolling';
 import loginAPI from './loginAPI';
 import {observer} from 'mobx-react';
+
 const LoginScreen = observer(({navigation}) => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState();
@@ -71,8 +59,8 @@ const LoginScreen = observer(({navigation}) => {
           style={{
             height: '95%',
             width: '90%',
-            borderRadius: 20,
-            marginLeft: 10,
+            borderRadius: moderateScale(UI.borderRadiusLarge),
+            marginLeft: scale(UI.marginMedium),
             backgroundColor: colors.BackgroundColor,
           }}>
           <View
@@ -117,15 +105,15 @@ const LoginScreen = observer(({navigation}) => {
                 height: verticalScale(30),
                 alignContent: 'center',
                 justifyContent: 'center',
-                marginTop: 10,
-                marginBottom: 3,
+                marginTop: verticalScale(UI.marginMedium),
+                marginBottom: verticalScale(3),
               }}>
               <TouchableOpacity onPress={() => login()}>
                 <Text
                   style={{
                     textAlign: 'center',
-                    fontSize: scale(14),
-                    fontFamily: FONT,
+                    fontSize: scale(UI.fontSizeMedium),
+                    fontFamily: UI.FONT,
                     color: '#f13e4d',
                     fontWeight: 'bold',
                   }}>
@@ -140,8 +128,8 @@ const LoginScreen = observer(({navigation}) => {
                     style={{
                       color: '#f13e4d',
                       fontWeight: 'bold',
-                      fontSize: scale(14),
-                      fontFamily: FONT,
+                      fontSize: scale(UI.fontSizeMedium),
+                      fontFamily: UI.FONT,
                     }}>
                     {' '}
                     SIGN UP
@@ -171,50 +159,54 @@ const LoginScreen = observer(({navigation}) => {
 
 const styles = StyleSheet.create({
   input1: {
-    marginHorizontal: paddingMedium,
-    marginTop: paddingSmall,
+    marginHorizontal: UI.paddingMedium,
+    marginTop: UI.paddingSmall,
     borderWidth: scale(1),
     height: verticalScale(55),
-    paddingHorizontal: scale(8),
-    borderRadius: scale(8),
-    fontFamily: FONT,
+    paddingHorizontal: scale(UI.paddingMedium),
+    borderRadius: scale(UI.borderRadiusMedium),
+    fontFamily: UI.FONT,
   },
-  inputStyle: {fontSize: scale(fontSizeBig), color: 'black', fontFamily: FONT},
-  labelStyle: {fontSize: scale(fontSizeBig)},
-  textErrorStyle: {fontSize: 16},
+  inputStyle: {
+    fontSize: scale(UI.fontSizeBig),
+    color: 'black',
+    fontFamily: UI.FONT,
+  },
+  labelStyle: {fontSize: scale(UI.fontSizeBig)},
+  textErrorStyle: {fontSize: UI.fontSizeMedium},
   title: {
-    marginTop: verticalScale(paddingSmall),
-    paddingVertical: scale(paddingSmall),
+    marginTop: verticalScale(UI.paddingSmall),
+    paddingVertical: scale(UI.paddingSmall),
     color: colors.BLACK,
-    paddingLeft: scale(paddingMedium),
-    fontSize: scale(fontSizeVeryLarge),
+    paddingLeft: scale(UI.paddingMedium),
+    fontSize: scale(UI.fontSizeVeryLarge),
     fontWeight: 'bold',
-    fontFamily: FONT,
+    fontFamily: UI.FONT,
   },
   container: {
     backgroundColor: colors.Loginbackground,
   },
   error: {
-    marginTop: verticalScale(paddingSmall),
-    paddingVertical: scale(paddingSmall),
+    marginTop: verticalScale(UI.paddingSmall),
+    paddingVertical: scale(UI.paddingSmall),
     color: colors.Error,
-    paddingLeft: scale(paddingMedium),
-    fontSize: scale(fontSizeMedium),
+    paddingLeft: scale(UI.paddingMedium),
+    fontSize: scale(UI.fontSizeMedium),
     fontWeight: 'bold',
-    fontFamily: FONT,
+    fontFamily: UI.FONT,
   },
   subtitle: {
-    fontSize: 12,
-    marginLeft: 20,
+    fontSize: moderateScale(UI.fontSizeSmall),
+    marginLeft: scale(UI.marginBig),
     color: colors.TextColor,
-    marginTop: 15,
+    marginTop: verticalScale(UI.marginMedium),
   },
   text: {
     color: colors.TextHeaderColor,
 
     textAlign: 'center',
-    fontSize: scale(12),
-    fontFamily: FONT,
+    fontSize: scale(UI.fontSizeSmall),
+    fontFamily: UI.FONT,
   },
 });
 

@@ -4,29 +4,22 @@ import {
   View,
   Image,
   ScrollView,
-  Linking,
   PermissionsAndroid,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import StartingPage from '../../Components/StartingPage';
 import {observer} from 'mobx-react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {
-  API_BASE_URL,
-  API_KEY,
-  PERSON_GRP_ID,
-  FACELIST_NAME,
-} from '../../Utils/Constants';
 import Line from '../../Components/Line';
-import React, {Component, useState} from 'react';
+import React, {useState} from 'react';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
-import Requestor from '../../Lib/Requestor';
 import {launchCamera} from 'react-native-image-picker';
 import * as colors from '../../Utils/color';
 import LoadingScreen from '../../Components/LoadingScreen';
 import {getSimilarFacesAPI} from './SimilarFacesAPI';
 import {OPTIONS} from '../../Utils/Util';
+import * as UI from '../../Utils/UIConstants';
+import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
+
 const SimilarFaces = observer(() => {
   const [name, setName] = useState('');
   const reset = () => {
@@ -114,13 +107,13 @@ const SimilarFaces = observer(() => {
           <LoadingScreen />
         ) : (
           <View style={styles.container}>
-            <View style={[styles.viewRow, {marginTop: 10}]}>
+            <View style={[styles.viewRow, {marginTop: vs(UI.marginMedium)}]}>
               <View style={styles.viewColumn}>
                 <Image
                   style={{
-                    height: 150,
-                    width: 150,
-                    borderRadius: 15,
+                    height: vs(150),
+                    width: s(150),
+                    borderRadius: ms(15),
                   }}
                   source={FACE_STORE.getURI}
                   resizeMode={'contain'}
@@ -134,7 +127,8 @@ const SimilarFaces = observer(() => {
                   Crime Index : {FACE_STORE.getFaceData.sev}
                 </Text>
               </View>
-              <View style={[styles.viewColumn, {marginLeft: 10}]}>
+              <View
+                style={[styles.viewColumn, {marginLeft: s(UI.marginMedium)}]}>
                 <View style={styles.viewRow}>
                   <Text style={styles.textHeader}>First Name: </Text>
                   <Text style={styles.text}>{FACE_STORE.getFaceData.fn}</Text>
@@ -167,7 +161,7 @@ const SimilarFaces = observer(() => {
             <View style={styles.viewColumn}>
               <View style={styles.viewRow}>
                 <Text style={styles.textHeader}>Identification Marks: </Text>
-                <Text style={[styles.text, {flexWrap: 'wrap', width: 200}]}>
+                <Text style={[styles.text, {flexWrap: 'wrap', width: s(200)}]}>
                   {FACE_STORE.getFaceData.marks}
                 </Text>
               </View>
@@ -193,7 +187,8 @@ const SimilarFaces = observer(() => {
                   </View>
                   <View style={styles.viewRow}>
                     <Text style={styles.textHeader}>Complexion: </Text>
-                    <Text style={[styles.text, {flexWrap: 'wrap', width: 100}]}>
+                    <Text
+                      style={[styles.text, {flexWrap: 'wrap', width: s(100)}]}>
                       {FACE_STORE.getFaceData.com}
                     </Text>
                   </View>
@@ -229,39 +224,24 @@ const SimilarFaces = observer(() => {
             </View>
             <Line head="Sample" />
             <View
-              style={[styles.viewRow, {alignItems: 'center', marginTop: 15}]}>
+              style={[
+                styles.viewRow,
+                {alignItems: 'center', marginTop: vs(UI.marginBig)},
+              ]}>
               <Image
                 source={{uri: FACE_STORE.getFaceData.p2}}
                 resizeMode={'contain'}
-                style={{
-                  height: 100,
-                  width: 100,
-                  marginRight: 10,
-                  borderRadius: 15,
-                  flex: 0.33,
-                }}
+                style={styles.ImageDisplay}
               />
               <Image
                 source={{uri: FACE_STORE.getFaceData.p2}}
                 resizeMode={'contain'}
-                style={{
-                  height: 100,
-                  width: 100,
-                  marginRight: 10,
-                  borderRadius: 15,
-                  flex: 0.33,
-                }}
+                style={styles.ImageDisplay}
               />
               <Image
                 source={{uri: FACE_STORE.getFaceData.p3}}
                 resizeMode={'contain'}
-                style={{
-                  height: 100,
-                  width: 100,
-                  marginRight: 10,
-                  borderRadius: 15,
-                  flex: 0.33,
-                }}
+                style={styles.ImageDisplay}
               />
             </View>
             <View>
@@ -274,60 +254,54 @@ const SimilarFaces = observer(() => {
   );
 });
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
-    marginLeft: 10,
-    marginRight: 10,
+    marginLeft: s(UI.marginMedium),
+    marginRight: s(UI.marginMedium),
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
     backgroundColor: colors.BackgroundColor,
     flex: 1,
   },
-  image: {
-    width: '100px',
-    marginRight: '5',
-    height: '200px',
-    borderRadius: 8,
-    backgroundColor: 'white',
-  },
+
   button: {
     padding: 0,
-    margin: 20,
-    height: 45,
+    margin: s(UI.marginBig),
+    height: vs(45),
     overflow: 'hidden',
     backgroundColor: 'white',
   },
   text_input: {
-    height: 40,
+    height: vs(40),
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: ms(1),
     backgroundColor: colors.TextColor,
   },
   textHeader: {
     fontWeight: '500',
-    fontSize: 12,
-    marginTop: 5,
+    fontSize: ms(UI.fontSizeSmall),
+    marginTop: vs(UI.marginSmall),
     color: colors.TextHeaderColor,
   },
   text: {
     fontWeight: '500',
-    fontSize: 12,
-    marginTop: 5,
+    fontSize: ms(UI.fontSizeSmall),
+    marginTop: vs(UI.marginSmall),
 
     color: colors.TextColor,
     flexWrap: 'wrap',
   },
   textCrime: {
     fontWeight: '800',
-    fontSize: 14,
-    marginTop: 5,
+    fontSize: ms(UI.fontSizeMedium),
+    marginTop: vs(UI.marginSmall),
 
     color: colors.TextColor,
     flexWrap: 'wrap',
   },
   message: {
-    fontSize: 20,
+    fontSize: ms(UI.fontSizeBig),
     fontWeight: 'bold',
   },
   viewColumn1: {
@@ -343,7 +317,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
-    marginTop: 2,
+    marginTop: vs(2),
   },
 
   viewRow: {
@@ -352,20 +326,28 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   SubmitButtonStyle: {
-    marginTop: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
-    marginBottom: 10,
+    marginTop: vs(UI.marginMedium),
+    paddingTop: vs(UI.paddingMedium),
+    paddingBottom: vs(UI.paddingMedium),
+    marginLeft: s(30),
+    marginRight: s(30),
+    marginBottom: vs(UI.marginMedium),
     backgroundColor: colors.ButtonColor,
-    borderRadius: 15,
+    borderRadius: vs(UI.borderRadiusLarge),
     borderWidth: 1,
   },
 
   TextStyle: {
     color: colors.TextHeaderColor,
     textAlign: 'center',
+  },
+
+  ImageDisplay: {
+    height: vs(100),
+    width: s(100),
+    marginRight: s(UI.marginMedium),
+    borderRadius: ms(15),
+    flex: 0.33,
   },
 });
 export default SimilarFaces;

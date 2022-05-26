@@ -18,9 +18,15 @@ import {
 import {SUSPECT_STORE} from '../../Mobx/SUSPECT_STORE';
 import {ReportSummaryAPI} from './ReportSummaryAPI';
 
-const ReportScreen = observer(() => {
+const ReportScreen = observer(({navigation}) => {
   useEffect(() => {
-    ReportSummaryAPI();
+    //SUSPECT_STORE.setIsDetailAPI(false);
+    console.log('main', SUSPECT_STORE.getIsLoading);
+    if (!SUSPECT_STORE.getIsMainAPI) {
+      console.log('Main inside');
+      ReportSummaryAPI();
+      SUSPECT_STORE.setIsMainAPI(true);
+    }
   });
   return (
     <View style={styles.MainContainer}>
@@ -44,7 +50,9 @@ const ReportScreen = observer(() => {
                 }}
                 onPress={e => {
                   e.stopPropagation();
-                  alert('test');
+                  SUSPECT_STORE.reset();
+                  console.log('data', SUSPECT_STORE.getSuspectData);
+                  SUSPECT_STORE.setIsMain(false);
                 }}
                 title={marker.name}
                 subtitle={marker.location}>

@@ -1,4 +1,3 @@
-import {observer} from 'mobx-react';
 import {
   NETWORK_ERROR,
   REPORT_API,
@@ -45,13 +44,8 @@ export const ReportAPI = async (locationid, personid, conf, reportedby) => {
           console.log('response detect' + JSON.stringify(res));
           showMessage(SUCCESS_MESSAGE);
           FACE_STORE.setIsReported(true);
-          //console.log('response detect test' + JSON.stringify(res.data[0][2]));
-
-          // CONTACT_STORE.setIsLoading(false);
-          //console.log('inside', CONTACT_STORE.getIsLoading);
         })
         .catch(error => {
-          //CONTACT_STORE.setIsLoading(false);
           showMessage(JSON.stringify(error));
         });
     } else {

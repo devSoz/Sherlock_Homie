@@ -1,15 +1,16 @@
-import React, {Component} from 'react';
-import {AppRegistry, StyleSheet, View, Text} from 'react-native';
+import React from 'react';
+import {View} from 'react-native';
 import * as colors from '../../Utils/color';
 import SimilarFaces from './SimilarFaces';
 import {FloatingAction} from 'react-native-floating-action';
 import {APP_NAME, LOCATION} from '../../Utils/Constants';
-
+import Header from '../../Components/Header';
 import Share from 'react-native-share';
 import {observer} from 'mobx-react';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
 import RNFetchBlob from 'rn-fetch-blob';
 import {ReportAPI} from './Report';
+import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
 
 const actions = [
   {
@@ -76,8 +77,8 @@ const FaceRecognition = observer(() => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Scan Face</Text>
+      <View style={[styles.header, {flexDirection: 'row'}]}>
+        <Header headerText="Scan Face" Tooltip="sample tool" />
       </View>
       <SimilarFaces />
       {FACE_STORE.getIsIdentified && (
@@ -92,29 +93,17 @@ const FaceRecognition = observer(() => {
   );
 });
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ccc',
   },
-
-  headerText: {
-    color: colors.LightText,
-    textShadowOffset: {width: 1, height: 3},
-    fontSize: 20,
-    fontWeight: '500',
-    flex: 1,
-    alignSelf: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
-  },
   header: {
-    height: 55,
+    height: vs(60),
     width: '100%',
     backgroundColor: colors.ProfileBackgroundColor,
-    justifyContent: 'center',
     alignItems: 'center',
   },
 });

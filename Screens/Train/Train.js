@@ -1,11 +1,5 @@
-import React, {Component} from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import React from 'react';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import * as colors from '../../Utils/color';
 import {observer} from 'mobx-react';
 import {TrainAPI} from './TrainAPI';
@@ -14,7 +8,7 @@ const Train = observer(() => {
   const trainData = () => {
     TrainAPI();
   };
-  //https://sherlock-homie.cognitiveservices.azure.com/face/v1.0/persongroups/persongrp_2/train
+
   return (
     <View
       style={{
@@ -33,14 +27,14 @@ const Train = observer(() => {
 });
 const styles = StyleSheet.create({
   SubmitButtonStyle: {
-    marginTop: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
-    marginBottom: 10,
+    marginTop: vs(UI.marginMedium),
+    paddingTop: vs(UI.paddingMedium),
+    paddingBottom: vs(UI.paddingMedium),
+    marginLeft: s(30),
+    marginRight: s(30),
+    marginBottom: vs(UI.marginMedium),
     backgroundColor: colors.ButtonColor,
-    borderRadius: 15,
+    borderRadius: vs(UI.borderRadiusLarge),
     borderWidth: 1,
   },
 

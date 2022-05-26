@@ -1,30 +1,15 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  PermissionsAndroid,
-} from 'react-native';
-import {scale, verticalScale} from 'react-native-size-matters';
+import {Text, View, TextInput} from 'react-native';
 import * as colors from '../../Utils/color';
 import SubmitButton from '../Face_Collection/Button';
 import ErrorCard from '../Face_Collection/ErrorMessage';
-import {
-  API_BASE_URL,
-  API_KEY,
-  PERSON_GRP_ID,
-  FACELIST_NAME,
-} from '../../Utils/Constants';
+import {API_BASE_URL, API_KEY, PERSON_GRP_ID} from '../../Utils/Constants';
 import React, {useState} from 'react';
-import {FACE_STORE} from '../../Mobx/ADD_FACES_STORE';
-
+import * as UI from '../../Utils/UIConstants';
 import {NATIONALITY, GENDER, FLIGHT} from '../../Utils/PickerList';
 import {Picker} from '@react-native-picker/picker';
-
 import Requestor from '../../Lib/Requestor';
-import {launchCamera} from 'react-native-image-picker';
-
 import PagerView from 'react-native-pager-view';
+import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
 
 const FaceDetails = () => {
   const [errorMessage, setErrorMessage] = useState('');
@@ -75,50 +60,6 @@ const FaceDetails = () => {
     quality: 1,
     noData: false,
     includeBase64: true,
-  };
-  const requestCameraPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: 'App Camera Permission',
-          message: 'App needs access to your camera ',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Camera permission given');
-        LaunchCam();
-      } else {
-        console.log('Camera permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
-
-  const LaunchCam = async () => {
-    launchCamera(options, res => {
-      console.log('Response = ', JSON.stringify(res).substring(1, 200));
-      if (res.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (res.error) {
-        console.log('ImagePicker Error: ', res.error);
-      } else if (res.customButton) {
-        console.log('User tapped custom button: ', res.customButton);
-        alert(res.customButton);
-      } else {
-        console.log('response uritest', res.assets[0].uri);
-        console.log('test', JSON.stringify(res.assets[0]).substring(1, 200));
-
-        FACE_STORE.setName(name);
-        FACE_STORE.setPhotoData(res.assets[0].base64);
-        FACE_STORE.setURI({uri: res.assets[0].uri});
-        AddFaceToFaceList();
-      }
-    });
   };
 
   const validatePersonalData = () => {
@@ -273,10 +214,12 @@ const FaceDetails = () => {
           <View style={styles.header}>
             <Text style={styles.headerText}>Personal Details</Text>
           </View>
+
           <View style={[styles.viewRow]}>
             <View style={[styles.viewColumn]}>
               <Text style={styles.textHeader}>First Name: </Text>
               <TextInput
+                maxLength={50}
                 style={styles.text_input}
                 onChangeText={val => updateState('fn', val)}
               />
@@ -284,6 +227,7 @@ const FaceDetails = () => {
             <View style={styles.viewColumn}>
               <Text style={styles.textHeader}>Last Name: </Text>
               <TextInput
+                maxLength={50}
                 style={styles.text_input}
                 onChangeText={val => updateState('ln', val)}
               />
@@ -292,6 +236,7 @@ const FaceDetails = () => {
           <View style={styles.viewColumn}>
             <Text style={styles.textHeader}>Alias: </Text>
             <TextInput
+              maxLength={50}
               style={styles.text_input}
               onChangeText={val => updateState('alias', val)}
             />
@@ -300,6 +245,7 @@ const FaceDetails = () => {
             <Text style={styles.textHeader}>Age/Sex: </Text>
             <View style={styles.viewRow}>
               <TextInput
+                maxLength={3}
                 style={styles.text_inputNum}
                 onChangeText={val => updateState('age', val)}
                 keyboardType="numeric"
@@ -340,20 +286,30 @@ const FaceDetails = () => {
             </View>
           </View>
           <View style={styles.viewColumn}>
-            <Text style={styles.textHeader}>Crime Index: </Text>
+            <Text style={styles.textHeader}>Crime Index(0-9) 0 is High: </Text>
             <TextInput
               style={styles.text_inputNum}
+              maxLength={1}
               onChangeText={val => updateState('sev', val)}
               keyboardType="numeric"
             />
           </View>
 
-          {pageError == '1' && <ErrorCard message={errorMessage} />}
-          <SubmitButton AddFaceToFaceList={AddFaceToFaceList} />
-          <View
-            style={[styles.viewRow, {justifyContent: 'center', width: '100%'}]}>
-            <Text style={styles.textDotBold}>.</Text>
-            <Text style={styles.textDot}> . . .</Text>
+          <View style={[styles.viewColumn, {width: '100%'}]}>
+            {pageError == '1' && <ErrorCard message={errorMessage} />}
+            <SubmitButton AddFaceToFaceList={AddFaceToFaceList} />
+            <View
+              style={[
+                styles.viewRow,
+                {
+                  justifyContent: 'center',
+                  width: '100%',
+                  alignContent: 'flex-end',
+                },
+              ]}>
+              <Text style={styles.textDotBold}>.</Text>
+              <Text style={styles.textDot}> . . .</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -365,6 +321,7 @@ const FaceDetails = () => {
           <View style={[styles.viewColumn]}>
             <Text style={styles.textHeader}>Identification Marks: </Text>
             <TextInput
+              maxLength={150}
               style={[styles.text_input, {width: 200, height: 100}]}
               onChangeText={val => updateState('marks', val)}
               multiline
@@ -374,6 +331,7 @@ const FaceDetails = () => {
           <View style={styles.viewColumn}>
             <Text style={styles.textHeader}>Height: </Text>
             <TextInput
+              maxLength={50}
               style={styles.text_input}
               onChangeText={val => updateState('height', val)}
             />
@@ -381,6 +339,7 @@ const FaceDetails = () => {
           <View style={styles.viewColumn}>
             <Text style={styles.textHeader}>Weight: </Text>
             <TextInput
+              maxLength={50}
               style={styles.text_input}
               onChangeText={val => updateState('weight', val)}
             />
@@ -388,6 +347,7 @@ const FaceDetails = () => {
           <View style={styles.viewColumn}>
             <Text style={styles.textHeader}>Eye Color: </Text>
             <TextInput
+              maxLength={50}
               style={[styles.text_input, {width: 200}]}
               onChangeText={val => updateState('eye', val)}
             />
@@ -395,6 +355,7 @@ const FaceDetails = () => {
           <View style={styles.viewColumn}>
             <Text style={styles.textHeader}>Complexion: </Text>
             <TextInput
+              maxLength={50}
               style={[styles.text_input, {width: 200}]}
               onChangeText={val => updateState('com', val)}
             />
@@ -426,40 +387,44 @@ const FaceDetails = () => {
             <Text style={styles.headerText}>Additional Details</Text>
           </View>
           <View style={[styles.viewRow]}>
-            <Text style={styles.textHeader}>Charges: </Text>
+            <Text style={styles.textHeaderFixed}>Charges: </Text>
 
             <TextInput
+              maxLength={3}
               style={[styles.text_inputNum, {marginBottom: 10, marginTop: 10}]}
               onChangeText={val => updateState('ch', val)}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Arrests: </Text>
+            <Text style={styles.textHeaderFixed}>Arrests: </Text>
             <TextInput
+              maxLength={3}
               style={[styles.text_inputNum, {marginBottom: 10}]}
               onChangeText={val => updateState('ar', val)}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Conviction: </Text>
+            <Text style={styles.textHeaderFixed}>Conviction: </Text>
             <TextInput
+              maxLength={3}
               style={[styles.text_inputNum, {marginBottom: 10}]}
               onChangeText={val => updateState('co', val)}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Outstanding Warrents: </Text>
+            <Text style={styles.textHeaderFixed}>Outstanding Warrents: </Text>
             <TextInput
+              maxLength={3}
               style={[styles.text_inputNum, {marginBottom: 10}]}
               onChangeText={val => updateState('wa', val)}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Flight Risk: </Text>
+            <Text style={styles.textHeaderFixed}>Flight Risk: </Text>
             <View style={styles.pickerView}>
               <Picker
                 selectedValue={selectedFlight}
@@ -502,8 +467,9 @@ const FaceDetails = () => {
             <Text style={styles.headerText}>Photo/Charge Sheet</Text>
           </View>
           <View style={[styles.viewRow]}>
-            <Text style={styles.textHeader}>Picture 1: </Text>
+            <Text style={styles.textHeaderFixed}>Picture 1: </Text>
             <TextInput
+              maxLength={150}
               style={[
                 styles.text_input,
                 {marginBottom: 10, width: 200, marginTop: 10},
@@ -512,23 +478,26 @@ const FaceDetails = () => {
             />
           </View>
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Picture 2: </Text>
+            <Text style={styles.textHeaderFixed}>Picture 2: </Text>
             <TextInput
+              maxLength={150}
               style={[styles.text_input, {marginBottom: 10, width: 200}]}
               onChangeText={val => updateState('p2', val)}
             />
           </View>
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Picture 3: </Text>
+            <Text style={styles.textHeaderFixed}>Picture 3: </Text>
             <TextInput
+              maxLength={150}
               style={[styles.text_input, {marginBottom: 10, width: 200}]}
               onChangeText={val => updateState('p3', val)}
             />
           </View>
 
           <View style={styles.viewRow}>
-            <Text style={styles.textHeader}>Charge Sheet: </Text>
+            <Text style={styles.textHeaderFixed}>Charge Sheet: </Text>
             <TextInput
+              maxLength={150}
               style={[styles.text_input, {marginBottom: 10, width: 200}]}
               onChangeText={val => updateState('cs', val)}
             />
@@ -557,20 +526,18 @@ const FaceDetails = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
-    flexWrap: 'wrap',
     alignItems: 'flex-start',
-    flex: 1,
     flexDirection: 'column',
-    paddingBottom: 5,
+    paddingBottom: vs(UI.paddingSmall),
     BackgroundColor: colors.BackgroundColor,
   },
   image: {
     width: '100px',
-    marginRight: '5',
+    marginRight: '5@s',
     height: '200px',
-    borderRadius: 8,
+    borderRadius: ms(UI.borderRadiusMedium),
     backgroundColor: 'white',
   },
   pickerView: {
@@ -578,71 +545,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     borderWidth: 1,
-    marginLeft: 15,
-    borderRadius: 10,
-    height: 40,
+    marginLeft: s(UI.marginMedium),
+    borderRadius: ms(UI.borderRadiusMedium),
+    height: '40@vs',
   },
   button: {
-    padding: 10,
-    margin: 20,
-    height: 45,
+    padding: s(UI.paddingSmall),
+    margin: s(UI.marginMedium),
+    height: '45@vs',
     color: colors.ButtonColor,
     backgroundColor: 'white',
   },
   text_inputNum: {
-    marginLeft: 5,
-    height: 40,
-    marginLeft: 15,
+    marginLeft: s(UI.marginSmall),
+    height: '40@vs',
+    marginLeft: s(UI.marginMedium),
     borderWidth: 1,
     padding: 2,
     alignItems: 'center',
     color: colors.TextBoxColor,
-    borderRadius: 8,
+    borderRadius: ms(UI.borderRadiusMedium),
     borderColor: colors.BorderColor,
-    width: 50,
+    width: '50@s',
   },
   picker: {
-    height: 50,
-    width: 200,
-    padding: 2,
-    borderRadius: 8,
+    height: '50@vs',
+    width: '200@s',
+    borderRadius: ms(UI.borderRadiusMedium),
     borderColor: colors.BorderColor,
     BackgroundColor: colors.BackgroundColor,
     color: 'black',
   },
   text_input: {
-    height: 40,
-    marginLeft: 15,
+    height: '40@vs',
+    marginLeft: s(UI.marginMedium),
     borderWidth: 1,
     padding: 2,
-
     color: colors.TextBoxColor,
-    borderRadius: 8,
+    borderRadius: ms(UI.borderRadiusMedium),
     borderColor: colors.BorderColor,
-    width: 150,
-  },
-  card: {
-    marginVertical: 3,
-    display: 'flex',
-    flexDirection: 'row',
-    backgroundColor: colors.Card,
-    borderRadius: 8,
-    elevation: 1,
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    width: '100%',
-  },
-
-  text_inputNum1: {
-    height: 30,
-    marginLeft: 15,
-    margin: 7,
-    borderWidth: 1,
-    padding: 2,
-    borderColor: 'gray',
-    color: colors.TextHeaderColor,
-    width: 70,
+    width: '150@s',
   },
   textDot: {
     color: colors.ButtonColor,
@@ -657,50 +599,57 @@ const styles = StyleSheet.create({
   },
   textPageHeader: {
     color: colors.TextHeaderColor,
-    fontSize: 20,
+    fontSize: ms(UI.fontSizeBig),
     fontWeight: 'bold',
   },
   headerText: {
     color: colors.LightText,
     textShadowOffset: {width: 1, height: 3},
-    fontSize: 20,
+    fontSize: ms(UI.fontSizeBig),
     fontWeight: '500',
     flex: 1,
     alignSelf: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: vs(UI.paddingMedium),
+    paddingBottom: vs(UI.paddingMedium),
   },
   error: {
     color: colors.Error,
-    fontSize: 12,
+    fontSize: ms(UI.fontSizeSmall),
   },
   Title: {
     fontWeight: 'bold',
-    fontSize: 20,
-    marginTop: 5,
+    fontSize: ms(UI.fontSizeBig),
+    marginTop: vs(UI.marginSmall),
     width: 100,
     color: colors.TextHeaderColor,
   },
   textHeader: {
     fontWeight: '500',
-    fontSize: 13,
-    marginTop: 5,
-    marginLeft: 15,
-    width: 100,
+    fontSize: ms(UI.fontSizeMedium),
+    marginTop: vs(UI.marginSmall),
+    marginLeft: s(UI.marginSmall),
+    color: colors.TextHeaderColor,
+  },
+  textHeaderFixed: {
+    fontWeight: '500',
+    fontSize: ms(UI.fontSizeMedium),
+    marginTop: vs(UI.marginSmall),
+    marginLeft: s(UI.marginMedium),
+    width: s(100),
     color: colors.TextHeaderColor,
   },
   text: {
     fontWeight: '500',
-    fontSize: 12,
-    marginTop: 5,
+    fontSize: ms(UI.fontSizeSmall),
+    marginTop: vs(UI.marginSmall),
     color: colors.TextColor,
   },
   message: {
-    fontSize: 20,
+    fontSize: ms(UI.fontSizeBig),
     fontWeight: 'bold',
   },
   header: {
-    height: 55,
+    height: vs(55),
     width: '100%',
     backgroundColor: colors.ProfileBackgroundColor,
     justifyContent: 'center',
@@ -709,15 +658,15 @@ const styles = StyleSheet.create({
   viewColumn: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    marginLeft: 5,
-    paddingBottom: 5,
+    marginLeft: s(UI.marginSmall),
+    paddingBottom: vs(UI.paddingSmall),
   },
   viewError: {
     flexDirection: 'row',
     backgroundColor: colors.ErrorBackgroundColor,
-    borderWidth: 1,
+    borderWidth: ms(1),
     width: '100%',
-    padding: 10,
+    padding: s(UI.paddingSmall),
     borderColor: colors.Error,
     alignItems: 'center',
     justifyContent: 'center',
@@ -733,7 +682,7 @@ const styles = StyleSheet.create({
   },
   iconFE: {
     color: colors.Error,
-    marginRight: 10,
+    marginRight: UI.marginSmall,
   },
 });
 

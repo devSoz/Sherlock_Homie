@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react';
 import {
   NETWORK_ERROR,
-  SUSPECT_API,
+  SUSPECTDATA_API,
   BACKEND_API_BASE_URL,
   SUCCESS_MESSAGE,
 } from '../../Utils/Constants';
@@ -15,15 +15,21 @@ const getDate = () => {
   return date.toString();
 };
 const showMessage = message => {
-  Alert.alert('Sherlock-Homie', message);
+  // Alert.alert('Sherlock-Homie', message);
+  console.log(message);
 };
 
-export const ReportSummaryAPI = async () => {
+export const getReportDataAPI = async () => {
+  SUSPECT_STORE.setIsLoading(true);
   NetInfo.fetch().then(state => {
     if (state.isConnected === true) {
       //console.log(DETECT_API);
       axios
-        .get(BACKEND_API_BASE_URL + SUSPECT_API, {}, {timeout: 5000})
+        .get(BACKEND_API_BASE_URL + SUSPECTDATA_API, {
+          params: {
+            Location_ID: 1000,
+          },
+        })
 
         .then(res => {
           //showMessage(SUCCESS_MESSAGE);
@@ -40,8 +46,8 @@ export const ReportSummaryAPI = async () => {
           showMessage(JSON.stringify(error));
         });
     } else {
-      SUSPECT_STORE.setIsLoading(false);
       showMessage(NETWORK_ERROR);
+      SUSPECT_STORE.setIsLoading(false);
     }
   });
 };
@@ -51,11 +57,12 @@ const JSontoList = msg => {
 
   msg.forEach(item => {
     const data = {
-      count: '#' + item[0],
-      name: item[1],
-      location: item[2],
-      latitude: parseFloat(item[3].substring(0, item[3].search(' '))),
-      longitude: parseFloat(item[3].substring(11, 18)),
+      FullName: item[3],
+      Alias: item[4],
+      ProfileURL: item[5],
+      DateReported: item[6],
+      CrimeIndex: item[7],
+      ConfLevel: item[8],
     };
     suspects.push(data);
 

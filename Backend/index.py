@@ -110,7 +110,7 @@ def index5():
         #password_1 = request.args.get('password')
         cur = conn.cursor()
         
-        query = "select p.*,l.AppDisplayName, l.location, l.GLocation from suspect p, location l where p.location_id=l.location_id "
+        query = "select p.*,l.AppDisplayName, l.location, l.GLocation from suspect p, location l where p.location_id=l.location_id  order by suspect_id desc"
         cur.execute(query )
         data = cur.fetchall()
         #mysql.connection.commit()
@@ -123,12 +123,12 @@ def index4():
         conn=mysql.connector.connect(host=hostname, 
                         port=portadr,user=username,
                         passwd=pwd,db=schema)
-        locationid = request.args.get('location_ID')
+        locationid = "1001" #request.args.get('location_ID')
         #password_1 = request.args.get('password')
         cur = conn.cursor()
         
-        query = "select * from suspect p, location l where p.location_id=l.location_id and l.location_id =%s"
-        cur.execute(query,(locationid ))
+        query = "select * from suspect p, location l where p.location_id=l.location_id and l.location_id = %s %s order by suspect_id desc"
+        cur.execute(query,(locationid,""))
         data = cur.fetchall()
         #mysql.connection.commit()
         cur.close()

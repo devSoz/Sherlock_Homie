@@ -1,12 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import LottieFile from '../Lottie/Starting_RecognitionPage.json';
 
-//import {HeaderHeight} from '../../utils/UI_CONSTANTS';
-//import {scale, verticalScale} from 'react-native-size-matters';
-
-const LoadingScreen = () => {
+const TrainingModel = () => {
   return (
     <View
       style={{
@@ -31,4 +28,4 @@ const LoadingScreen = () => {
   );
 };
 
-export default LoadingScreen;
+export default TrainingModel;

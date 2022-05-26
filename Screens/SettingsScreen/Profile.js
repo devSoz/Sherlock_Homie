@@ -1,20 +1,11 @@
-import React, {useReducer} from 'react';
-
+import React from 'react';
 import {USER_STORE} from '../../Mobx/USER_STORE';
 import {observer} from 'mobx-react';
 import * as colors from '../../Utils/color';
-import {scale, verticalScale} from 'react-native-size-matters';
+import {s, vs, ms, ScaledSheet} from 'react-native-size-matters';
+import * as UI from '../../Utils/UIConstants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  Button,
-  TouchableOpacity,
-  View,
-  Alert,
-} from 'react-native';
+import {Image, Text, TouchableOpacity, View, Alert} from 'react-native';
 const Profile = observer(() => {
   const logOut = () => {
     Alert.alert(
@@ -45,25 +36,19 @@ const Profile = observer(() => {
       <View style={styles.imageBackgroundNb} />
       <View style={styles.containerEA} elevation={0}>
         <Image
-          style={StyleSheet.flatten([styles.imageA3, {borderRadius: 10}])}
+          style={[styles.imageA3, {borderRadius: 10}]}
           resizeMode="cover"
           source={{
             uri: USER_STORE.getProfilePic,
           }}
         />
-        <Text style={StyleSheet.flatten([styles.textPr])}>
-          {USER_STORE.getName}
-        </Text>
+        <Text style={styles.textPr}>{USER_STORE.getName}</Text>
         <Text style={[styles.textsub, {textAlign: 'center'}]}>
           {USER_STORE.getUserType == 'A' ? ' (Administrator)' : '(User)'}
         </Text>
       </View>
       <View elevation={0}>
-        <TouchableOpacity
-          style={StyleSheet.flatten([
-            styles.touchableOk,
-            {borderColor: 'red'},
-          ])}>
+        <TouchableOpacity style={[styles.touchableOk, {borderColor: 'red'}]}>
           <View style={styles.viewKs}>
             <Icon
               style={styles.iconFE}
@@ -74,47 +59,42 @@ const Profile = observer(() => {
             <Text style={styles.text}>{USER_STORE.getEmail}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={StyleSheet.flatten([
-            styles.touchableOk,
-            {borderColor: 'red'},
-          ])}>
+        <TouchableOpacity style={[styles.touchableOk, {borderColor: 'red'}]}>
           <View style={styles.viewKs}>
             <Icon
               style={styles.iconFE}
-              size={24}
+              size={ms(UI.iconMedium)}
               color={colors.Green}
               name="phone"
             />
             <Text style={styles.text}>{USER_STORE.getPhoneNo}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={StyleSheet.flatten([
-            styles.touchableOk,
-            {borderColor: 'red'},
-          ])}>
+        <TouchableOpacity style={[styles.touchableOk, {borderColor: 'red'}]}>
           <View style={styles.viewKs}>
             <Icon
               style={styles.iconFE}
-              size={24}
+              size={ms(UI.iconMedium)}
               color={colors.Green}
               name="id-badge"
             />
             <Text style={styles.text}>{USER_STORE.getID}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={StyleSheet.flatten([
-            styles.touchableOk,
-            {borderColor: 'red'},
-          ])}>
+        <TouchableOpacity style={[styles.touchableOk, {borderColor: 'red'}]}>
           <View style={[styles.viewKs, {marginLeft: 15}]}>
             <Text style={styles.text}>Department : {USER_STORE.getDept} </Text>
           </View>
         </TouchableOpacity>
 
-        <View style={[{width: '100%', marginTop: 10, alignItems: 'center'}]}>
+        <View
+          style={[
+            {
+              width: '100%',
+              marginTop: vs(UI.marginMedium),
+              alignItems: 'center',
+            },
+          ]}>
           <TouchableOpacity
             style={[styles.SubmitButtonStyle]}
             activeOpacity={0.5}
@@ -130,25 +110,24 @@ const Profile = observer(() => {
     </View>
   );
 });
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   screenContainerJb: {
     justifyContent: 'space-evenly',
   },
   subtitle: {
-    fontSize: 12,
-    marginLeft: 20,
+    fontSize: ms(UI.fontSizeSmall),
+    marginLeft: s(UI.marginBig),
     color: colors.TextColor,
-    marginTop: 5,
+    marginTop: vs(UI.marginSmall),
   },
   SubmitButtonStyle: {
-    marginTop: 10,
-    padding: 10,
-
-    marginLeft: 30,
-    marginRight: 30,
-    marginBottom: 10,
+    marginTop: vs(UI.marginMedium),
+    padding: s(UI.paddingMedium),
+    marginLeft: s(30),
+    marginRight: s(30),
+    marginBottom: vs(UI.marginMedium),
     backgroundColor: colors.ButtonColor,
-    borderRadius: 15,
+    borderRadius: ms(UI.borderRadiusLarge),
     borderWidth: 1,
   },
 
@@ -174,75 +153,59 @@ const styles = StyleSheet.create({
   },
   imageBackgroundNb: {
     width: '100%',
-    height: 150,
+    height: vs(150),
     backgroundColor: colors.ProfileBackgroundColor,
   },
   imageA3: {
-    height: 120,
-    width: 120,
+    height: vs(120),
+    width: s(120),
   },
   containerEA: {
     alignItems: 'center',
-    marginTop: -65,
+    marginTop: vs(-65),
   },
 
   textPr: {
     width: '100%',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 2,
+    marginTop: vs(UI.marginBig),
+    marginBottom: vs(2),
     color: colors.TextHeaderColor,
-    fontSize: 30,
+    fontSize: ms(UI.fontSizeVeryLarge),
     fontWeight: '500',
   },
   text: {
     width: '100%',
     textAlign: 'left',
-    marginTop: 8,
-    marginLeft: 3,
+    marginTop: vs(UI.marginMedium),
+    marginLeft: s(UI.marginSmall),
     color: colors.TextHeaderColor,
-    fontSize: 15,
+    fontSize: ms(UI.fontSizeMedium),
     fontWeight: '500',
   },
   textsub: {
     width: '100%',
     textAlign: 'left',
-    marginTop: 2,
-    marginLeft: 3,
-    marginBottom: 10,
+    marginTop: vs(2),
+    marginLeft: s(UI.marginSmall),
+    marginBottom: vs(UI.marginMedium),
     color: colors.TextHeaderColor,
-    fontSize: 15,
+    fontSize: ms(UI.fontSizeMedium),
     fontWeight: '500',
   },
   touchableOk: {
     borderTopWidth: 1,
-    paddingTop: 2,
-    paddingBottom: 2,
-    marginTop: 15,
+    paddingTop: vs(2),
+    paddingBottom: vs(2),
+    marginTop: vs(UI.marginBig),
   },
   iconFE: {
-    height: 24,
-    marginTop: 8,
-    width: 24,
-    marginLeft: 15,
-    marginRight: 10,
+    height: vs(24),
+    marginTop: vs(UI.marginMedium),
+    width: s(24),
+    marginLeft: s(UI.marginBig),
+    marginRight: s(UI.marginMedium),
     alignItems: 'center',
-  },
-
-  touchableOm: {
-    paddingBottom: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-  },
-  touchableBp: {
-    paddingBottom: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-  },
-  touchableJg: {
-    paddingBottom: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
   },
 });
 export default Profile;

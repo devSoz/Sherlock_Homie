@@ -1,4 +1,3 @@
-import {observer} from 'mobx-react';
 import {
   API_BASE_URL,
   API_KEY,
@@ -12,6 +11,7 @@ import {Alert} from 'react-native';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
 import Requestor from '../../Lib/Requestor';
 import NetInfo from '@react-native-community/netinfo';
+
 const showMessage = message => {
   Alert.alert(
     'Sherlock-Homie',
@@ -36,7 +36,6 @@ const showMessage = message => {
 export const getSimilarFacesAPI = async () => {
   NetInfo.fetch().then(state => {
     if (state.isConnected === true) {
-      //console.log(DETECT_API);
       Requestor.upload(
         API_BASE_URL + DETECT_API,
         API_KEY,

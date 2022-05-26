@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
 import {scale, verticalScale} from 'react-native-size-matters';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -9,7 +9,7 @@ import {
   fontSizeVeryLarge,
   paddingMedium,
   paddingSmall,
-} from '../../Utils/Constants';
+} from '../../Utils/UIConstants';
 import * as KEYS from '../../Utils/StorageKeys';
 import * as colors from '../../Utils/color';
 import LoadLottie from '../../Components/Lottie/LoadLottie';

@@ -1,14 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
+import React, {Component, useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  StatusBar,
+} from 'react-native';
 import LoadLottie from '../../Components/Lottie/LoadLottie';
-import getContactsAPI from './ContactsApi';
-import {CONTACT_STORE} from '../../Mobx/CONTACT_STORE';
+import {getReportDataAPI} from './ReportDetailAPI';
+import {SUSPECT_STORE} from '../../Mobx/SUSPECT_STORE';
 import {observer} from 'mobx-react';
 import * as colors from '../../Utils/color';
-import {scale, s, vs, ms, ScaledSheet} from 'react-native-size-matters';
-import * as UI from '../../Utils/UIConstants';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import {scale, verticalScale} from 'react-native-size-matters';
 
+import Icon from 'react-native-vector-icons/FontAwesome5';
 const Item = ({item, onPress, backgroundColor, textColor}) => (
   <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
     <View
@@ -18,43 +25,50 @@ const Item = ({item, onPress, backgroundColor, textColor}) => (
         justifyContent: 'flex-start',
       }}>
       <View>
-        <Icon
+        <Image
           style={{
-            width: scale(40),
-            borderRadius: ms(20),
-            color: colors.ButtonColor,
-            borderColor: 'red',
-
-            height: scale(40),
-            fontSize: ms(30),
+            height: 50,
+            width: 50,
+            borderRadius: 15,
           }}
-          fill="black"
-          name={
-            item.dept == 'Police'
-              ? 'user-ninja'
-              : item.dept == 'Control Room'
-              ? 'user-shield'
-              : user - secret
-          }
+          source={{uri: item.ProfileURL}}
+          resizeMode={'contain'}
         />
       </View>
       <View>
         <Text style={[styles.text]}>
-          {item.name} - {item.position}
+          {item.FullName} - {item.CrimeIndex}
         </Text>
-        <Text style={[styles.subtext]}>{item.phone}</Text>
+        <Text style={[styles.subtext]}>{item.Alias}</Text>
+        <Text style={[styles.subtext]}>
+          {item.DateReported.substring(0, item.DateReported.search('GMT'))} - (
+          {item.ConfLevel})
+        </Text>
       </View>
     </View>
   </TouchableOpacity>
 );
 
-const Contacts = observer(() => {
+const ReportDetail = observer(() => {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    if (CONTACT_STORE.getContactData == '') getContactsAPI();
+    console.log('test');
+    //SUSPECT_STORE.setIsMain(true);
+    if (!SUSPECT_STORE.getIsDetailAPI) {
+      getReportDataAPI();
+      console.log('inside');
+
+      SUSPECT_STORE.setIsDetailAPI(true);
+    }
   });
 
+  const goBack = () => {
+    SUSPECT_STORE.setIsMain(true);
+    SUSPECT_STORE.setIsMainAPI(false);
+    SUSPECT_STORE.setIsLoading(true);
+    console.log('main det', SUSPECT_STORE.getIsMainAPI);
+  };
   FlatListFooter = () => {
     return (
       <View style={{flexDirection: 'column'}}>
@@ -85,7 +99,7 @@ const Contacts = observer(() => {
     return (
       <View
         style={{
-          height: vs(1),
+          height: 1,
           width: '100%',
           backgroundColor: '#000',
         }}></View>
@@ -95,64 +109,85 @@ const Contacts = observer(() => {
   FlatListHeader = () => {
     return (
       <View style={styles.header}>
-        <Text style={styles.headerText}>Contact List</Text>
+        <Icon
+          style={styles.iconFE}
+          size={30}
+          color={colors.Green}
+          name="angle-double-left"
+          onPress={goBack}
+        />
+        <Text style={styles.headerText}>Suspect List</Text>
       </View>
     );
   };
   return (
     <View containerStyle={{borderTopWidth: 0, borderBottomWidth: 0}}>
-      {CONTACT_STORE.getIsLoading ? (
+      {SUSPECT_STORE.getIsLoading ? (
         <LoadLottie lottieType="Loading" />
       ) : (
         <FlatList
-          data={CONTACT_STORE.getContactData}
+          data={SUSPECT_STORE.getSuspectData}
           renderItem={renderItem}
           keyExtractor={item => item.phone}
           ItemSeparatorComponent={FlatListItemSeparator}
           ListHeaderComponent={FlatListHeader}
-          ListFooterComponent={FlatListFooter}
+          // ListFooterComponent={FlatListFooter}
         />
       )}
     </View>
   );
 });
 
-const styles = ScaledSheet.create({
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
   item: {
-    padding: s(UI.paddingMedium),
-    marginVertical: vs(UI.marginMedium),
-    marginHorizontal: s(UI.marginBig),
+    padding: 10,
+    marginVertical: 8,
+    marginHorizontal: 16,
   },
   title: {
-    fontSize: ms(UI.fontSizeMedium),
+    fontSize: 14,
     fontWeight: '500',
-    marginLeft: s(UI.marginBig),
-    marginRight: s(UI.marginBig),
+    marginLeft: 20,
+    marginRight: 20,
     color: colors.TextHeaderColor,
   },
   text: {
-    fontSize: ms(UI.fontSizeMedium),
-    marginLeft: s(UI.marginMedium),
+    fontSize: 14,
+    marginLeft: 10,
     fontWeight: '500',
     color: colors.TextHeaderColor,
   },
   subtext: {
-    fontSize: ms(UI.fontSizeSmall),
-    marginLeft: s(UI.marginMedium),
+    fontSize: 12,
+    marginLeft: 10,
     color: colors.TextColor,
+  },
+  iconFE: {
+    height: 24,
+
+    width: 24,
+    marginLeft: 15,
+    marginRight: 10,
+    alignItems: 'center',
+    color: 'red',
   },
   headerText: {
     color: colors.LightText,
     textShadowOffset: {width: 1, height: 3},
-    fontSize: ms(UI.fontSizeBig),
+    fontSize: 20,
     fontWeight: '500',
     flex: 1,
     alignSelf: 'center',
-    paddingTop: vs(UI.paddingMedium),
-    paddingBottom: s(UI.paddingMedium),
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   header: {
-    height: vs(5),
+    height: 55,
+    flexDirection: 'row',
     width: '100%',
     backgroundColor: colors.ProfileBackgroundColor,
     justifyContent: 'center',
@@ -160,4 +195,4 @@ const styles = ScaledSheet.create({
   },
 });
 
-export default Contacts;
+export default ReportDetail;

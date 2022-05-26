@@ -7,6 +7,7 @@ import HomeScreen from '../Screens/HomeScreen';
 import {USER_STORE} from '../Mobx/USER_STORE';
 import SplashScreen from '../Screens/SplashScreen';
 import {observer} from 'mobx-react';
+
 const Navigator = observer(() => {
   //USER_STORE.setSplash(true);
   return (
