@@ -10,4 +10,5 @@ export const ADD_4 =
 export const STAT = 'stat';
 export const STAT_DETAIL = 'stat';
 export const PROFILE = 'stat';
-export const CONTACT = 'stat';
+export const CONTACT =
+  'Shows the list of important contacts from various departments\n\nContact Name\nContact Type\nContact number';

@@ -1,9 +1,4 @@
-export const GENDER = [
-  'FEMALE',
-  'MALE',
-  'TransGender',
-  'Prefer not to Mention',
-];
+export const GENDER = ['F', 'M', 'Trans', 'Prefer not to Mention'];
 export const FLIGHT = ['No', 'Yes'];
 export const NATIONALITY = [
   'Indian',

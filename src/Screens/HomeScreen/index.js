@@ -5,12 +5,13 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import Contact from '../SettingsScreen/Contacts';
 import FaceRecognition from '../FaceRecognition';
-import FaceDetails from '../Face_Collection';
+import FaceDetails from '../../Navigation/AdminNavigator';
 import Profile from '../SettingsScreen/Profile';
 import Report from '../../Navigation/ReportNavigator';
 import {USER_STORE} from '../../Mobx/USER_STORE';
 
 const App: () => Node = () => {
+  //Initializing the bottom tab navigator
   const Tab = createBottomTabNavigator();
 
   return (
@@ -25,18 +26,22 @@ const App: () => Node = () => {
           ),
         }}
       />
-      {USER_STORE.getUserType == 'A' && (
-        <Tab.Screen
-          name="Add Data"
-          component={FaceDetails}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({color, size}) => (
-              <Icon name="plus" color={color} size={size} />
-            ),
-          }}
-        />
-      )}
+      {
+        //Displaying the admin tab (Add faces and train data)
+        //only if the user is logged in as admin
+        USER_STORE.getUserType == 'A' && (
+          <Tab.Screen
+            name="Add Data"
+            component={FaceDetails}
+            options={{
+              headerShown: false,
+              tabBarIcon: ({color, size}) => (
+                <Icon name="plus" color={color} size={size} />
+              ),
+            }}
+          />
+        )
+      }
       <Tab.Screen
         name="Summary"
         component={Report}

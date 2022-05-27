@@ -14,7 +14,8 @@ import LoadingScreen from '../../Components/LottieFiles/LoadingScreen';
 const LoginScreen = observer(({navigation}) => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState();
-  console.log(USER_STORE.getUserName);
+
+  //Function to check if the fields are not empty
   const validateData = () => {
     USER_STORE.setError('');
     if (userName == '') {
@@ -26,9 +27,9 @@ const LoginScreen = observer(({navigation}) => {
     } else return true;
   };
 
+  //Method to valiate data and the API component to authenticate user
   const login = () => {
     if (validateData()) {
-      // USER_STORE.setIsLoading(true);
       loginAPI(userName, password);
       navigation.push('Home');
     }
@@ -95,7 +96,6 @@ const LoginScreen = observer(({navigation}) => {
               }}
               focusColor="black"
               maxLength={30}
-              // textError={rollNo.length === 0 ? 'Please enter' : ''}
             />
 
             <TextInput
@@ -103,7 +103,6 @@ const LoginScreen = observer(({navigation}) => {
               style={styles.input1}
               inputStyle={styles.inputStyle}
               labelStyle={styles.labelStyle}
-              // textErrorStyle={styles.textErrorStyle}
               placeholder="Password"
               placeholderTextColor="gray"
               onChangeText={text => {
@@ -113,7 +112,6 @@ const LoginScreen = observer(({navigation}) => {
               focusColor="black"
               autoCapitalize="none"
               maxLength={30}
-              // textError={rollNo.length === 0 ? 'Please enter' : ''}
             />
             <View
               style={{
@@ -135,7 +133,6 @@ const LoginScreen = observer(({navigation}) => {
                   SUBMIT
                 </Text>
               </TouchableOpacity>
-              {/* <View style={{h}} /> */}
               <TouchableOpacity style={{marginTop: 3}}>
                 <Text style={styles.text}>
                   Don't have an account?

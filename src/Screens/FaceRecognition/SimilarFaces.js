@@ -1,31 +1,38 @@
 import {
-  StyleSheet,
   Text,
   View,
   Image,
   ScrollView,
   PermissionsAndroid,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import StartingPage from '../../Components/LottieFiles/StartingPage';
 import {observer} from 'mobx-react';
 import Line from '../../Components/Line';
 import React, {useState} from 'react';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
+import {SUSPECT_STORE} from '../../Mobx/SUSPECT_STORE';
 import {launchCamera} from 'react-native-image-picker';
 import * as colors from '../../Utils/color';
-import LoadLottie from '../../Components/LottieFiles/LoadingScreen';
+import LoadLottie from '../../Components/LottieFiles/LoadLottie';
 import {getSimilarFacesAPI} from './SimilarFacesAPI';
 import {OPTIONS} from '../../Utils/Util';
 import * as UI from '../../Utils/UIConstants';
+import {NATIONALITY, FLIGHT, GENDER} from '../../Utils/PickerList';
 import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
 
 const SimilarFaces = observer(() => {
   const [name, setName] = useState('');
+
+  //Function to reset IsLoading and IsIdentified mobx that controls the Loading Lottie
   const reset = () => {
     FACE_STORE.setIsLoading(false);
     FACE_STORE.setIsIdentified(false);
   };
+
+  //Function to take user permission to access camera
   const requestCameraPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -39,10 +46,8 @@ const SimilarFaces = observer(() => {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Camera permission given');
         LaunchCam();
       } else {
-        console.log('Camera permission denied');
         reset();
       }
     } catch (err) {
@@ -51,36 +56,41 @@ const SimilarFaces = observer(() => {
     }
   };
 
+  //Function that lauches camera in user mobile and store the URI
+  //and base64 photo image in the FACE_STORE
+  //And set IsStart and Isloading to show Loading Lottie
+  //And cals getSimilarFacesAPI to identify if any suspect from the azure database
   const LaunchCam = async () => {
     launchCamera(OPTIONS, res => {
-      console.log('loading = ', FACE_STORE.getIsLoading);
       if (res.didCancel) {
         reset();
-        console.log('User cancelled image picker');
         FACE_STORE.setIsStart(true);
       } else if (res.error) {
         FACE_STORE.setIsStart(true);
-        console.log('ImagePicker Error: ', res.error);
       } else {
         FACE_STORE.setName(name);
         FACE_STORE.setPhotoData(res.assets[0].base64);
         FACE_STORE.setURI({uri: res.assets[0].uri});
         FACE_STORE.setIsStart(false);
         FACE_STORE.setIsLoading(true);
+        SUSPECT_STORE.setIsMainAPI(false);
         getSimilarFacesAPI();
       }
     });
   };
+
+  //Function to set color of the Crime Index value based on severity
   const getStyle = val => {
-    if (val == 1) {
+    if (val >= 8) {
       return {color: 'red'};
-    } else if (val <= 3) {
+    } else if (val >= 5) {
       return {color: 'orange'};
     } else return {color: 'black'};
   };
+
+  //Funtion called once user clicks Detect Image button
   const detectImage = () => {
     FACE_STORE.reset();
-    console.log('start after btn', JSON.stringify(FACE_STORE.getIsStart));
     requestCameraPermission();
   };
 
@@ -146,13 +156,31 @@ const SimilarFaces = observer(() => {
                 <View style={styles.viewRow}>
                   <Text style={styles.textHeader}>Age/Sex: </Text>
                   <Text style={styles.text}>
-                    : {FACE_STORE.getFaceData.age}, {FACE_STORE.getFaceData.sex}
+                    {FACE_STORE.getFaceData.age}/
+                    {GENDER[FACE_STORE.getFaceData.sex]}
                   </Text>
                 </View>
                 <View style={styles.viewRow}>
                   <Text style={styles.textHeader}>Nationality: </Text>
                   <Text style={styles.text}>
-                    : {FACE_STORE.getFaceData.nat}
+                    {FACE_STORE.getFaceData.nat
+                      ? NATIONALITY[FACE_STORE.getFaceData.nat]
+                      : 'Indian'}
+                  </Text>
+                </View>
+                <View style={styles.viewRow}>
+                  <Icon
+                    style={styles.iconFE}
+                    size={ms(UI.iconSmall)}
+                    name="link"
+                  />
+
+                  <Text
+                    style={styles.text}
+                    onPress={() => {
+                      Linking.openURL(FACE_STORE.getFaceData.cs);
+                    }}>
+                    View Charge Sheet
                   </Text>
                 </View>
               </View>
@@ -216,7 +244,7 @@ const SimilarFaces = observer(() => {
                     <Text style={styles.textHeader}>Flight Risk: </Text>
                     <Text style={styles.text}>
                       {' '}
-                      {FACE_STORE.getFaceData.fl}
+                      {FACE_STORE.getFaceData.fl == 1 ? 'Yes' : 'No'}
                     </Text>
                   </View>
                 </View>
@@ -229,7 +257,7 @@ const SimilarFaces = observer(() => {
                 {alignItems: 'center', marginTop: vs(UI.marginBig)},
               ]}>
               <Image
-                source={{uri: FACE_STORE.getFaceData.p2}}
+                source={{uri: FACE_STORE.getFaceData.p1}}
                 resizeMode={'contain'}
                 style={styles.ImageDisplay}
               />
@@ -288,7 +316,6 @@ const styles = ScaledSheet.create({
     fontWeight: '500',
     fontSize: ms(UI.fontSizeSmall),
     marginTop: vs(UI.marginSmall),
-
     color: colors.TextColor,
     flexWrap: 'wrap',
   },
@@ -348,6 +375,11 @@ const styles = ScaledSheet.create({
     marginRight: s(UI.marginMedium),
     borderRadius: ms(15),
     flex: 0.33,
+  },
+  iconFE: {
+    color: colors.Blue,
+    marginTop: vs(UI.marginSmall),
+    marginRight: s(UI.marginSmall),
   },
 });
 export default SimilarFaces;

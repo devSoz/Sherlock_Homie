@@ -10,12 +10,13 @@ import * as UI from '../../Utils/UIConstants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Header from '../../Components/Header';
 import * as H from '../../Utils/help';
+
+//the Flatlist item
 const Item = ({item, onPress, backgroundColor, textColor}) => (
   <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
     <View
       style={{
         flexDirection: 'row',
-
         justifyContent: 'flex-start',
       }}>
       <View>
@@ -25,7 +26,6 @@ const Item = ({item, onPress, backgroundColor, textColor}) => (
             borderRadius: ms(20),
             color: colors.ButtonColor,
             borderColor: 'red',
-
             height: scale(40),
             fontSize: ms(30),
           }}
@@ -52,10 +52,12 @@ const Item = ({item, onPress, backgroundColor, textColor}) => (
 const Contacts = observer(() => {
   const [selectedId, setSelectedId] = useState(null);
 
+  //Call contacts api if not loaded already
   useEffect(() => {
     if (CONTACT_STORE.getContactData == '') getContactsAPI();
   });
 
+  //Footer for flatlist
   FlatListFooter = () => {
     return (
       <View style={{flexDirection: 'column'}}>
@@ -82,6 +84,8 @@ const Contacts = observer(() => {
       />
     );
   };
+
+  //LIne separator
   FlatListItemSeparator = () => {
     return (
       <View
@@ -93,6 +97,7 @@ const Contacts = observer(() => {
     );
   };
 
+  //Flat list header
   FlatListHeader = () => {
     return (
       <View style={styles.header}>
@@ -100,10 +105,11 @@ const Contacts = observer(() => {
       </View>
     );
   };
+
   return (
     <View containerStyle={{borderTopWidth: 0, borderBottomWidth: 0}}>
       <Header headerText="Contact List" toolTip={H.CONTACT} />
-      {CONTACT_STORE.getIsLoading ? (
+      {CONTACT_STORE.getIsLoading ? ( //Load lottie until api is finished
         <LoadLottie lottieType="Loading" />
       ) : (
         <FlatList

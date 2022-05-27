@@ -1,6 +1,8 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import * as colors from '../Utils/color';
+
+//Component to render lines
 export default function Line({head}) {
   return (
     <View style={{flexDirection: 'row', marginTop: 10}}>

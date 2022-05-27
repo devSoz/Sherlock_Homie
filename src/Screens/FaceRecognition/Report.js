@@ -8,20 +8,22 @@ import {Alert} from 'react-native';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
+
+//Method to get current data as string
 const getDate = () => {
   var date = new Date();
-  console.log('date', date.toString());
   return date.toString();
 };
+
+//Method to show alert
 const showMessage = message => {
   Alert.alert('Sherlock-Homie', message);
 };
 
+//Function to report identified suspects to the database to store them
 export const ReportAPI = async (locationid, personid, conf, reportedby) => {
-  console.log('locaion', locationid);
   NetInfo.fetch().then(state => {
     if (state.isConnected === true) {
-      //console.log(DETECT_API);
       axios
         .post(
           BACKEND_API_BASE_URL + REPORT_API,
@@ -41,7 +43,6 @@ export const ReportAPI = async (locationid, personid, conf, reportedby) => {
         )
 
         .then(res => {
-          console.log('response detect' + JSON.stringify(res));
           showMessage(SUCCESS_MESSAGE);
           FACE_STORE.setIsReported(true);
         })

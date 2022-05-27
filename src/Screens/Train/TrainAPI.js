@@ -1,4 +1,3 @@
-import {observer} from 'mobx-react';
 import {
   API_BASE_URL,
   API_KEY,
@@ -9,13 +8,15 @@ import {
 import {Alert} from 'react-native';
 import Requestor from '../../Lib/Requestor';
 import NetInfo from '@react-native-community/netinfo';
+
+//SHow alert message
 const showMessage = message => {
   Alert.alert('Sherlock-Homie', message);
 };
 
+//API call to submit for training data
 export const TrainAPI = async () => {
   NetInfo.fetch().then(state => {
-    console.log(API_BASE_URL + TRAIN_API + PERSON_GRP_ID + '/train');
     if (state.isConnected === true) {
       Requestor.request(
         API_BASE_URL + TRAIN_API + PERSON_GRP_ID + '/train',
@@ -23,9 +24,7 @@ export const TrainAPI = async () => {
         API_KEY,
       )
         .then(res => {
-          console.log('train' + JSON.stringify(res));
-
-          showMessage(JSON.stringify(res));
+          showMessage('Submitted for training');
         })
         .catch(function (error) {
           showMessage(JSON.stringify(error.message));

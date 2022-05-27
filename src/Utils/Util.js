@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
 import RNFetchBlob from 'rn-fetch-blob';
 
+//Options while launching the camera to detect suspects
 export const OPTIONS = {
   title: 'Select Photo',
   takePhotoButtonTitle: 'Take Photo...',
@@ -12,6 +12,8 @@ export const OPTIONS = {
   noData: false,
   includeBase64: true,
 };
+
+//Utility function to convert image url to base 64
 export const URLtoBase64 = url => {
   let imagePath = null;
   RNFetchBlob.config({

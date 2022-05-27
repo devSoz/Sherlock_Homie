@@ -8,6 +8,7 @@ import {USER_STORE} from '../Mobx/USER_STORE';
 import SplashScreen from '../Screens/SplashScreen';
 import {observer} from 'mobx-react';
 
+//Primary navigator (Refer USER_STORE for details fo the flag variables)
 const Navigator = observer(() => {
   console.log('nav', USER_STORE.getUserName);
   return (
@@ -21,8 +22,8 @@ const Navigator = observer(() => {
               headerShown: false,
             }}
           />
-        ) : // ) : (token && name && rollNo && department) ? (
-        !USER_STORE.getUserName ? ( //we're getting only token as of now
+        ) : !USER_STORE.getUserName ? ( //If user data is empty,
+          //login screen is shown, else navigate to main screen
           <>
             <RootStack.Screen
               name="Login"

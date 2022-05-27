@@ -1,7 +1,9 @@
 import {action, makeObservable, observable, computed} from 'mobx';
 
+//Store to hold the state of logged in user data
 class UserData {
   state = {
+    //Primary user data
     userName: null,
     userType: null,
     userEmailID: null,
@@ -13,10 +15,12 @@ class UserData {
     error: '',
     uniqueID: null,
     category: '',
+    //User location
     locationName: '',
     location: '',
-    splash: true,
     location_id: '',
+    //Flag for splash screen and loading loader
+    splash: true,
     isLoading: false,
   };
 

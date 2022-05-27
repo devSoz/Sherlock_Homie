@@ -8,20 +8,23 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as U from '../../Utils/StorageKeys';
 import NetInfo from '@react-native-community/netinfo';
+
+//Login API file
 export default function loginAPI(username, password) {
   USER_STORE.setIsLoading(true);
   NetInfo.fetch().then(state => {
+    //Check if there is network connection
     if (state.isConnected === true) {
       axios
         .get(BACKEND_API_BASE_URL + LOGIN_API, {
+          //Username and password is passed as
+          //params to check the validity of the user and their role (admin or user)
           params: {
             username,
             password,
           },
         })
-
         .then(res => {
-          console.log('response xadetect' + JSON.stringify(res.data).length);
           if (JSON.stringify(res.data).length <= 5) {
             USER_STORE.setError('Invalid Username/Password');
             USER_STORE.setIsLoading(false);
@@ -29,13 +32,10 @@ export default function loginAPI(username, password) {
             setUserData(res.data[0], username);
             USER_STORE.setIsLoading(false);
           }
-          //JSontoList(res.data);
         })
         .catch(error => {
-          console.log(JSON.stringify(error));
           USER_STORE.setIsLoading(false);
         });
-      //FACE_STORE.setIsLoading(false);
     } else {
       SUSPECT_STORE.setIsLoading(false);
       showMessage(NETWORK_ERROR);
@@ -43,28 +43,19 @@ export default function loginAPI(username, password) {
   });
 }
 
+//Function to set USER_STORE and async storage
 const setUserData = (userData, username) => {
-  console.log('userdata');
   USER_STORE.reset;
-
   USER_STORE.setCategory(userData[0]);
-
   USER_STORE.setLocationName(userData[1]);
-
   USER_STORE.setLocation(userData[5]);
-
   USER_STORE.setName(userData[10] + ' ' + userData[9]);
-
   USER_STORE.setID(userData[12]);
-
   USER_STORE.setPhoneNo(userData[16]);
-
   USER_STORE.setProfilePic(userData[11]);
   USER_STORE.setUserType(userData[14]);
   USER_STORE.setDept(userData[17]);
-
   USER_STORE.setEmail(userData[15]);
-
   USER_STORE.setLocation_ID(userData[19]);
 
   AsyncStorage.setItem(U.USER_TYPE, USER_STORE.getUserType);
@@ -79,16 +70,6 @@ const setUserData = (userData, username) => {
   AsyncStorage.setItem(U.LOCATION_CATEGORY, USER_STORE.getCategory);
   AsyncStorage.setItem(U.LOCATION_ID, USER_STORE.getLocation_ID);
   AsyncStorage.setItem(U.LOCATION_Name, USER_STORE.getLocationName);
-  console.log('after sync');
+
   USER_STORE.setUserName(username);
-  console.log('type', JSON.stringify(USER_STORE));
-  AsyncStorage.getItem(KEYS.USER_PROFILE).then(val => {
-    if (val) {
-      console.log('found', val);
-    } else {
-      console.log('not found', val);
-    }
-  });
-  console.log('check key', USER_STORE.getUserType);
-  console.log('img', userData[11]);
 };

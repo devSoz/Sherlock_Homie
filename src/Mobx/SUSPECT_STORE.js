@@ -1,11 +1,12 @@
 import {action, makeObservable, observable, computed} from 'mobx';
 
+//Store for Report Screen (Holds the suspects reprt data)
 class suspect {
   state = {
-    suspectData: [],
-    isLoading: true,
-    isMain: true,
-    isDetailAPI: false,
+    suspectData: [], //List of suspects previously identified
+    isLoading: true, //Loader
+    isMain: true, //Shows report summary screen if true
+    isDetailAPI: false, //True if detail API call is done
     isMainAPI: false,
     locationID: '',
   };
@@ -15,6 +16,7 @@ class suspect {
     this.state.isLoading = false;
     this.state.isDetailAPI = false;
     this.state.isMainAPI = false;
+    this.state.isMain = true;
     this.state.locationID = null;
   };
 

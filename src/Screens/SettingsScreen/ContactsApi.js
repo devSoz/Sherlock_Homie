@@ -5,25 +5,24 @@ import {
   NETWORK_ERROR,
 } from '../../Utils/Constants';
 import axios from 'axios';
-import {observer} from 'mobx-react';
 import NetInfo from '@react-native-community/netinfo';
+
+//Get contact data from database
 export default function getContactsAPI() {
   CONTACT_STORE.setIsLoading(true);
   NetInfo.fetch().then(state => {
+    //check if network
     if (state.isConnected === true) {
+      //API call to get contact data
       axios
         .get(BACKEND_API_BASE_URL + GET_CONTACT_API, {}, {timeout: 5000})
 
         .then(res => {
-          console.log('response detect' + JSON.stringify(res.data));
-          console.log('response detect test' + JSON.stringify(res.data[0][2]));
           JSontoList(res.data);
-          CONTACT_STORE.setIsLoading(false);
-          console.log('inside', CONTACT_STORE.getIsLoading);
+          CONTACT_STORE.setIsLoading(false); //turn off loader
         })
         .catch(error => {
           CONTACT_STORE.setIsLoading(false);
-          console.log('error', CONTACT_STORE.getIsLoading);
         });
     } else {
       SUSPECT_STORE.setIsLoading(false);
@@ -32,6 +31,7 @@ export default function getContactsAPI() {
   });
 }
 
+//Function to convert JSON to list
 const JSontoList = msg => {
   const contacts = [];
   msg.forEach(item => {
@@ -46,5 +46,4 @@ const JSontoList = msg => {
     contacts.push(data);
   });
   CONTACT_STORE.setContactData(contacts);
-  console.log('arrary', JSON.stringify(CONTACT_STORE.getContactData));
 };

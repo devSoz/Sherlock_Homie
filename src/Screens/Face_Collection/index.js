@@ -1,7 +1,7 @@
 import {Text, View, TextInput} from 'react-native';
 import * as colors from '../../Utils/color';
-import SubmitButton from './Button';
-import ErrorCard from './ErrorMessage';
+import SubmitButton from '../../Components/Button';
+import ErrorCard from '../../Components/ErrorMessage';
 import {API_BASE_URL, API_KEY, PERSON_GRP_ID} from '../../Utils/Constants';
 import React, {useState} from 'react';
 import * as UI from '../../Utils/UIConstants';
@@ -9,9 +9,10 @@ import {NATIONALITY, GENDER, FLIGHT} from '../../Utils/PickerList';
 import {Picker} from '@react-native-picker/picker';
 import Requestor from '../../Lib/Requestor';
 import PagerView from 'react-native-pager-view';
-import Header from '../../Components/Header';
+import Header from '../../Components/HeaderBack';
 import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
 import * as H from '../../Utils/help';
+import {ADD_FACES_STORE} from '../../Mobx/ADD_FACES_STORE';
 
 const FaceDetails = () => {
   const [errorMessage, setErrorMessage] = useState('');
@@ -20,31 +21,36 @@ const FaceDetails = () => {
   const [selectedNation, setSelectedNation] = useState();
   const [pageError, setpageError] = useState(0);
   const ref = React.useRef(PagerView);
+
+  //user_data collection holds the form data.
+  //Name is given short form due to length restriction of user data in azure.
   const [user_data, setUserData] = useState({
-    fn: '',
-    ln: '',
-    alias: '',
+    fn: '', //First Name
+    ln: '', //Last Name
+    alias: '', //Alias
     age: '',
     sex: '',
-    nat: '',
-    marks: '',
-    sev: 0,
-    ch: 0,
+    nat: '', //Nationality
+    marks: '', //Identification mark
+    sev: 0, //Crime index
+    ch: 0, //Charges
     wa: 0, //Number of Outstanding Warrent
     co: 0, //Number of conviction
     ar: 0, //Number of arrests
     fl: '', //Has flight risk
     height: '',
     weight: '',
-    com: '',
-    eye: '',
-    p1: 'https://www.filmibeat.com/img/popcorn/profile_photos/silambarasan-20210414152430-3748.jpg',
-    p2: 'https://imgnew.outlookindia.com/uploadimage/library/16_9/16_9_5/IMAGE_1645696154.jpg',
-    p3: 'https://igimages.gumlet.io/tamil/home/simbu-11122021a.jpg?w=376&dpr=2.6',
-    cs: 'https://coimages.sciencemuseumgroup.org.uk/images/155/194/medium_1991_5083_0004.jpg',
+    com: '', //Complexion
+    eye: '', //Eye Color
+    //Below fields hold url of the picture and the cs refers to charge sheet
+    p1: '',
+    p2: '',
+    p3: '',
+    cs: '',
     pid: 0,
   });
 
+  //Update user_data state variable
   const updateState = (key, value) => {
     setUserData(oldState => ({
       ...oldState,
@@ -64,6 +70,8 @@ const FaceDetails = () => {
     includeBase64: true,
   };
 
+  //Function to validate if user has entered all mandatory fields of Personal data
+  //, else show warning message
   const validatePersonalData = () => {
     if (user_data['fn'] == '') {
       setErrorMessage('Please enter First Name');
@@ -84,6 +92,8 @@ const FaceDetails = () => {
     } else return true;
   };
 
+  //Function to validate if user has entered all mandatory fields of Identification data
+  //, else show warning message
   const validateIdentifyData = () => {
     if (user_data['marks'] == '') {
       setErrorMessage('Please enter Identification marks');
@@ -103,10 +113,9 @@ const FaceDetails = () => {
     }
     return true;
   };
-  const resetValues = () => {
-    setpageError('0');
-    setErrorMessage('');
-  };
+
+  //Function to validate if user has entered all mandatory fields of additional data
+  //, else show warning message
   const validateAddlData = () => {
     if (user_data['ch'] == '') {
       setErrorMessage('Please enter No. of Charges');
@@ -124,6 +133,8 @@ const FaceDetails = () => {
     return true;
   };
 
+  //Function to validate if user has entered all mandatory fields of Image and Chargesheet details
+  //, else show warning message
   const validateImageData = () => {
     if (user_data['p1'] == '') {
       setErrorMessage('Please enter URL of picture 1');
@@ -141,11 +152,11 @@ const FaceDetails = () => {
     } else return true;
   };
 
+  //Function to check mandatory fields and upload data into Azure
   const AddFaceToFaceList = () => {
     resetValues();
     if (!validatePersonalData()) {
       setpageError('1');
-      console.log('page', pageError);
       ref.current.setPage(0);
     } else if (!validateIdentifyData()) {
       setpageError(2);
@@ -157,11 +168,12 @@ const FaceDetails = () => {
       setpageError(4);
       ref.current.setPage(3);
     } else {
+      //construct to add person details
       let data = {
         name: user_data.fn + ' ' + user_data.ln,
         userData: JSON.stringify(user_data),
       };
-      console.log('data sent:', JSON.stringify(data));
+      //API call to add person details
       Requestor.request(
         API_BASE_URL + '/face/v1.0/persongroups/' + PERSON_GRP_ID + '/persons',
         'POST',
@@ -169,11 +181,17 @@ const FaceDetails = () => {
         JSON.stringify(data),
       )
         .then(res => {
-          console.log('response addface', JSON.stringify(res));
-
           let personId = res.personId;
+          //Calls AddFace function to add picture1 of the person into Azure
           AddFace(personId, user_data.p1);
+          //Calls AddFace function to add picture2 of the person into Azure
           AddFace(personId, user_data.p2);
+          //Calls AddFace function to add picture3 of the person into Azure
+          AddFace(personId, user_data.p3);
+          alert('Added the data');
+          ADD_FACES_STORE.setIsMain(false);
+          ADD_FACES_STORE.setIsMainAPI(false);
+          ADD_FACES_STORE.setIsAdmin(true);
         })
         .catch(error => {
           console.log(JSON.stringify(error));
@@ -181,11 +199,13 @@ const FaceDetails = () => {
     }
   };
 
-  const AddFace = (personId, url) => {
+  //Function to add picture of the person for training
+  const AddFace = async (personId, url) => {
     let data = {
       url: url,
     };
 
+    //API calll to add face of the person
     Requestor.request(
       API_BASE_URL +
         '/face/v1.0/persongroups/' +
@@ -198,11 +218,17 @@ const FaceDetails = () => {
       JSON.stringify(data),
     )
       .then(res_addFace => {
-        console.log('response create face', JSON.stringify(res_addFace));
+        console.log('create face', JSON.stringify(res_addFace));
       })
       .catch(error => {
         console.log(JSON.stringify(error));
       });
+  };
+
+  //Function to reset Error Data
+  const resetValues = () => {
+    setpageError('0');
+    setErrorMessage('');
   };
 
   return (
@@ -285,7 +311,7 @@ const FaceDetails = () => {
             </View>
           </View>
           <View style={styles.viewColumn}>
-            <Text style={styles.textHeader}>Crime Index(0-9) 0 is High: </Text>
+            <Text style={styles.textHeader}>Crime Index(0-9) 9 is High: </Text>
             <TextInput
               style={styles.text_inputNum}
               maxLength={1}

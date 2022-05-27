@@ -1,5 +1,9 @@
 import React from 'react';
 import {USER_STORE} from '../../Mobx/USER_STORE';
+import {SUSPECT_STORE} from '../../Mobx/SUSPECT_STORE';
+import {ADD_FACES_STORE} from '../../Mobx/ADD_FACES_STORE';
+import {CONTACT_STORE} from '../../Mobx/CONTACT_STORE';
+import {FACE_STORE} from '../../Mobx/FACE_STORE';
 import {observer} from 'mobx-react';
 import * as colors from '../../Utils/color';
 import {s, vs, ms, ScaledSheet} from 'react-native-size-matters';
@@ -14,7 +18,10 @@ import {
   ScrollView,
   Button,
 } from 'react-native';
+
+//SHow user profile
 const Profile = observer(() => {
+  //Function to handle logout
   const logOut = () => {
     Alert.alert(
       'Logout?',
@@ -26,12 +33,18 @@ const Profile = observer(() => {
         },
         {
           text: 'YES',
+          //Reset all values on logout
           onPress: () => {
             USER_STORE.setName('');
             USER_STORE.setUserName('');
             USER_STORE.setDept('');
             USER_STORE.setUserType('');
             USER_STORE.setUniqueId('');
+            FACE_STORE.reset();
+            ADD_FACES_STORE.reset();
+            CONTACT_STORE.reset();
+            SUSPECT_STORE.reset();
+            USER_STORE.reset();
           },
         },
       ],

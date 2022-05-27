@@ -4,16 +4,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as KEYS from '../../Utils/StorageKeys';
 import LoadLottie from '../../Components/LottieFiles/LoadLottie';
 import {USER_STORE} from '../../Mobx/USER_STORE';
-
 import {observer} from 'mobx-react';
+
+//Splash screen
 const SplashScreen = observer(() => {
+  //On timeout(2sec) load login/home screen
   setTimeout(() => {
     update_userStore();
-    console.log('type', USER_STORE.getUserType);
-    console.log('name', USER_STORE.getUserName);
     USER_STORE.setSplash(false);
   }, 2000);
 
+  //Funtion to get data from asyncstore if available and
+  //update user_Store
   const update_userStore = () => {
     AsyncStorage.getItem(KEYS.USER_TYPE).then(val => {
       if (val) USER_STORE.setUserType(val);
@@ -54,14 +56,14 @@ const SplashScreen = observer(() => {
     AsyncStorage.getItem(KEYS.LOCATION_CATEGORY).then(val => {
       if (val) USER_STORE.setCategory(val);
       else USER_STORE.setCategory(null);
-      AsyncStorage.getItem(KEYS.LOCATION_ID).then(val => {
-        if (val) USER_STORE.setLocation_ID(val);
-        else USER_STORE.setLocation_ID(null);
-        AsyncStorage.getItem(KEYS.LOCATION_Name).then(val => {
-          if (val) USER_STORE.setLocationName(val);
-          else USER_STORE.setLocationName(null);
-        });
-      });
+    });
+    AsyncStorage.getItem(KEYS.LOCATION_ID).then(val => {
+      if (val) USER_STORE.setLocation_ID(val);
+      else USER_STORE.setLocation_ID(null);
+    });
+    AsyncStorage.getItem(KEYS.LOCATION_Name).then(val => {
+      if (val) USER_STORE.setLocationName(val);
+      else USER_STORE.setLocationName(null);
     });
   };
 

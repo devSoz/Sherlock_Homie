@@ -1,9 +1,10 @@
 import React from 'react';
 import {View, Button} from 'react-native';
-import * as colors from '../../Utils/color';
-import * as UI from '../../Utils/UIConstants';
+import * as colors from '../Utils/color';
+import * as UI from '../Utils/UIConstants';
 import {ScaledSheet, s, vs} from 'react-native-size-matters';
 
+//Componenet to show Submit button
 export default function SubmitButton({AddFaceToFaceList}) {
   return (
     <View

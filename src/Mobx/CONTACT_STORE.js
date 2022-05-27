@@ -1,9 +1,11 @@
 import {action, makeObservable, observable, computed} from 'mobx';
 
+//Store for contacts screen
 class contact {
   state = {
-    contactData: [],
-    isLoading: false,
+    contactData: [], //Contact details
+    isLoading: false, //Storing state of loading of contact details
+    //to display the status through lottie
   };
 
   reset = () => {

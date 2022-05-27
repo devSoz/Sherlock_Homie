@@ -1,3 +1,4 @@
+//Keys for async storage
 export const USER_TYPE = 'userType';
 export const USER_KEY = 'userName';
 export const USER_FULL_NAME = 'name';

@@ -1,6 +1,8 @@
 import RNFetchBlob from 'rn-fetch-blob';
 
+//Library function to handle API calls
 module.exports = {
+  //Upload for POST requests with Blob data
   upload: function (url, api_key, photo, query_params) {
     var ret = [];
     for (var d in query_params) {
@@ -32,6 +34,7 @@ module.exports = {
       });
   },
 
+  //Function for POST, GET, PUT requests
   request: function (url, method, api_key, data) {
     let headers = {
       'Content-Type': 'application/json',

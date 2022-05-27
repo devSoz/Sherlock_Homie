@@ -1,51 +1,50 @@
-import {observer} from 'mobx-react';
 import {
   NETWORK_ERROR,
   SUSPECT_API,
   BACKEND_API_BASE_URL,
-  SUCCESS_MESSAGE,
 } from '../../Utils/Constants';
 import {Alert} from 'react-native';
 import {SUSPECT_STORE} from '../../Mobx/SUSPECT_STORE';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
-const getDate = () => {
-  var date = new Date();
-  console.log('date', date.toString());
-  return date.toString();
-};
+
+//Method to show alerts
 const showMessage = message => {
   Alert.alert('Sherlock-Homie', message);
 };
 
+//Reset flags for loader and detailview
+const reset = () => {
+  SUSPECT_STORE.setIsLoading(false);
+  SUSPECT_STORE.setIsDetailAPI(false);
+};
+
+//API call
 export const ReportSummaryAPI = async () => {
+  SUSPECT_STORE.setIsLoading(true);
   NetInfo.fetch().then(state => {
+    //Check net connection
     if (state.isConnected === true) {
-      //console.log(DETECT_API);
+      //api call to get summary
       axios
         .get(BACKEND_API_BASE_URL + SUSPECT_API, {}, {timeout: 5000})
-
         .then(res => {
-          //showMessage(SUCCESS_MESSAGE);
-          console.log(JSON.stringify(res.data[0]));
           JSontoList(res.data);
-          SUSPECT_STORE.setIsLoading(false);
+          reset();
           SUSPECT_STORE.setIsMainAPI(true);
-          console.log(
-            'response detect' + JSON.stringify(SUSPECT_STORE.getSuspectData),
-          );
         })
         .catch(error => {
-          SUSPECT_STORE.setIsLoading(false);
+          reset();
           showMessage(JSON.stringify(error));
         });
     } else {
-      SUSPECT_STORE.setIsLoading(false);
+      reset();
       showMessage(NETWORK_ERROR);
     }
   });
 };
 
+//Function to convert JSON to list
 const JSontoList = msg => {
   const suspects = [];
 
@@ -59,13 +58,7 @@ const JSontoList = msg => {
       id: item[4],
     };
     suspects.push(data);
-
-    // text.push(item[0]);
-    // name.push(item[4]);
-    // pic.push(require('../Images/person.png'));
   });
 
   SUSPECT_STORE.setSuspectData(suspects);
-
-  console.log('arrary', JSON.stringify(SUSPECT_STORE.getSuspectData));
 };

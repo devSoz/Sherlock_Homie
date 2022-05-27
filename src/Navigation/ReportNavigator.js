@@ -7,8 +7,9 @@ import ReportDetail from '../Screens/ReportScreen/ReportDetail';
 import ReportScreen from '../Screens/ReportScreen';
 import {observer} from 'mobx-react';
 
+//Navigator for Report screen
+//(To show suspect summary and details on the map)
 const ReportNavigator = observer(() => {
-  //USER_STORE.setSplash(true);
   return (
     <NavigationContainer independent={true}>
       <RootStack.Navigator independent={true}>

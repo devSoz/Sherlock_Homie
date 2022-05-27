@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -13,14 +13,15 @@ import {getReportDataAPI} from './ReportDetailAPI';
 import {SUSPECT_STORE} from '../../Mobx/SUSPECT_STORE';
 import {observer} from 'mobx-react';
 import * as colors from '../../Utils/color';
-
 import Icon from 'react-native-vector-icons/FontAwesome5';
+
+//Screen to show details of the identified suspects
+//as a flatlist of the selected locationf rom the map
 const Item = ({item, onPress, backgroundColor, textColor}) => (
   <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
     <View
       style={{
         flexDirection: 'row',
-
         justifyContent: 'flex-start',
       }}>
       <View>
@@ -36,12 +37,11 @@ const Item = ({item, onPress, backgroundColor, textColor}) => (
       </View>
       <View>
         <Text style={[styles.text]}>
-          {item.FullName} - {item.CrimeIndex}
+          {item.FullName}, CI - {item.CrimeIndex}
         </Text>
         <Text style={[styles.subtext]}>{item.Alias}</Text>
         <Text style={[styles.subtext]}>
-          {item.DateReported.substring(0, item.DateReported.search('GMT'))} - (
-          {item.ConfLevel})
+          {item.DateReported.substring(0, item.DateReported.search('GMT'))}
         </Text>
       </View>
     </View>
@@ -52,11 +52,8 @@ const ReportDetail = observer(() => {
   const [selectedId, setSelectedId] = useState(null);
   const [isToolTip, setIsToolTip] = useState(false);
   useEffect(() => {
-    console.log('test');
-
     if (!SUSPECT_STORE.getIsDetailAPI) {
       getReportDataAPI();
-      console.log('inside');
     }
   });
 
@@ -64,21 +61,13 @@ const ReportDetail = observer(() => {
     SUSPECT_STORE.setIsMain(true);
     SUSPECT_STORE.setIsMainAPI(false);
     SUSPECT_STORE.setIsLoading(true);
-    console.log('main det', SUSPECT_STORE.getIsMainAPI);
   };
 
   const renderItem = ({item}) => {
     const backgroundColor = item.phone === selectedId ? '#6e3b6e' : '#f9c2ff';
     const color = item.phone === selectedId ? 'white' : 'black';
 
-    return (
-      <Item
-        item={item}
-        // onPress={() => setSelectedId(item.phone)}
-        //backgroundColor={{backgroundColor}}
-        textColor={{color}}
-      />
-    );
+    return <Item item={item} textColor={{color}} />;
   };
   FlatListItemSeparator = () => {
     return (
@@ -107,18 +96,20 @@ const ReportDetail = observer(() => {
   };
   return (
     <View containerStyle={{borderTopWidth: 0, borderBottomWidth: 0}}>
-      {SUSPECT_STORE.getIsLoading ? (
-        <LoadLottie lottieType="Loading" />
-      ) : (
-        <FlatList
-          data={SUSPECT_STORE.getSuspectData}
-          renderItem={renderItem}
-          keyExtractor={item => item.phone}
-          ItemSeparatorComponent={FlatListItemSeparator}
-          ListHeaderComponent={FlatListHeader}
-          // ListFooterComponent={FlatListFooter}
-        />
-      )}
+      {
+        //Displaying lottie until data is loaded into the SUSPECT_STORE
+        SUSPECT_STORE.getIsLoading ? (
+          <LoadLottie lottieType="Loading" />
+        ) : (
+          <FlatList
+            data={SUSPECT_STORE.getSuspectData}
+            renderItem={renderItem}
+            keyExtractor={item => item.phone}
+            ItemSeparatorComponent={FlatListItemSeparator}
+            ListHeaderComponent={FlatListHeader}
+          />
+        )
+      }
     </View>
   );
 });

@@ -1,5 +1,7 @@
 import {action, makeObservable, observable, computed} from 'mobx';
 
+//Store for Face recognition screen
+//Holds the state of identified face data
 class FaceData {
   state = {
     faceid: '',
@@ -8,11 +10,11 @@ class FaceData {
     name: '',
     redirectUpdate: false,
     face_Data: '',
-    isLoading: false,
-    isIdentified: false,
-    isReported: false,
-    isStart: true,
-    isError: false,
+    isLoading: false, //To show progress
+    isIdentified: false, //If the suspect is identified
+    isReported: false, //True if the identified suspect is reported
+    isStart: true, //To show the initial loader
+    isError: false, //True if any error is occured
     Message: '',
   };
 
@@ -24,11 +26,11 @@ class FaceData {
     this.state.redirectUpdate = false;
     this.state.isLoading = false;
     this.state.isStart = true;
-    this.isError = false;
-    this.isIdentified = false;
-    this.isReported = false;
-    this.Message = '';
-    this.face_Data = '';
+    this.state.isError = false;
+    this.state.isIdentified = false;
+    this.state.isReported = false;
+    this.state.Message = '';
+    this.state.face_Data = '';
   };
 
   setFaceID = val => {

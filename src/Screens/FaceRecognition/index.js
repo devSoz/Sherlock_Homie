@@ -8,6 +8,7 @@ import Header from '../../Components/Header';
 import Share from 'react-native-share';
 import {observer} from 'mobx-react';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
+import {USER_STORE} from '../../Mobx/USER_STORE';
 import RNFetchBlob from 'rn-fetch-blob';
 import {ReportAPI} from './Report';
 import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
@@ -32,7 +33,7 @@ const FaceRecognition = observer(() => {
     if (name == 'bt_share') shareFile();
     else {
       if (FACE_STORE.getIsReported) alert('Already reported');
-      else ReportAPI(1001, 'test', 1, 1);
+      else ReportAPI(USER_STORE.getLocation_ID, '', 1, 1);
     }
   };
   const shareFile = () => {
@@ -55,7 +56,7 @@ const FaceRecognition = observer(() => {
             '*IMPORTANT*\n' +
             APP_NAME +
             ' ' +
-            LOCATION +
+            USER_STORE.getLocationName +
             '\n\n*Identified suspect -* \n' +
             FACE_STORE.getFaceData.fn +
             ', ' +

@@ -12,6 +12,7 @@ import {FACE_STORE} from '../../Mobx/FACE_STORE';
 import Requestor from '../../Lib/Requestor';
 import NetInfo from '@react-native-community/netinfo';
 
+//Function to show alert message
 const showMessage = message => {
   Alert.alert(
     'Sherlock-Homie',
@@ -33,16 +34,19 @@ const showMessage = message => {
   );
 };
 
+//Function that calls Azure APIs to identify if
+//the captured picture is suspect based on the database
 export const getSimilarFacesAPI = async () => {
+  //Check if connected to network
   NetInfo.fetch().then(state => {
     if (state.isConnected === true) {
+      //Detect if picture contains face
       Requestor.upload(
         API_BASE_URL + DETECT_API,
         API_KEY,
         FACE_STORE.getPhotoData,
       )
         .then(facedetect_res => {
-          console.log('response detect' + JSON.stringify(facedetect_res));
           if (JSON.stringify(facedetect_res) == '[]') {
             showMessage('No face detected');
           } else {
@@ -54,7 +58,7 @@ export const getSimilarFacesAPI = async () => {
               faceIds: faceIdList,
               maxNumOfCandidatesReturned: 1,
             };
-            console.log('faceid', JSON.stringify(data));
+            //Call API to identify if detected picure is in the azure database
             Requestor.request(
               API_BASE_URL + IDENTIFY_API,
               'POST',
@@ -62,12 +66,11 @@ export const getSimilarFacesAPI = async () => {
               JSON.stringify(data),
             )
               .then(similarfaces_res => {
-                console.log('similar ', JSON.stringify(similarfaces_res));
                 if (JSON.stringify(similarfaces_res[0].candidates) == '[]') {
                   showMessage('Face not found in the criminal database');
                 } else {
                   let similar_face = similarfaces_res[0].candidates[0].personId;
-                  console.log('similar ', JSON.stringify(similar_face));
+                  //If identified, get the person details
                   Requestor.request(
                     API_BASE_URL +
                       PERSON_DETAIL_API +
@@ -77,9 +80,9 @@ export const getSimilarFacesAPI = async () => {
                     'GET',
                     API_KEY,
                   ).then(facelist_res => {
-                    console.log('info ', JSON.stringify(facelist_res.userData));
                     FACE_STORE.setFaceData(JSON.parse(facelist_res.userData));
                     FACE_STORE.setIsIdentified(true);
+                    FACE_STORE.setIsReported(false);
                     FACE_STORE.setIsLoading(false);
                   });
                 }

@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import LottieFile from '../../res/Lottie/loading.json';
 
+//Lottie for loader to show progress
 const LoadingScreen = () => {
   return (
     <View

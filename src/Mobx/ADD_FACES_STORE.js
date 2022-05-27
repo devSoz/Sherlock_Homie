@@ -1,13 +1,19 @@
 import {action, makeObservable, observable, computed} from 'mobx';
 
+//Store for AddFaces screen
 class InputData {
   state = {
+    //input data
     faceid: '',
     photo_data: '',
     uri: '',
     name: '',
     redirectUpdate: false,
     input_data: '',
+    isMain: false, //If true, shows the Admin screen options
+    isAdmin: true, //If true, navigates to add faces screen
+    isTrainAPI: false, //Will be set true if API call is done
+    isMainAPI: false, //Will be set true if API call is done
     isLoading: true,
   };
 
@@ -19,6 +25,10 @@ class InputData {
     this.state.redirectUpdate = false;
     this.state.isLoading = false;
     this.input_data = '';
+    this.state.isTrainAPI = false;
+    this.state.isMainAPI = false;
+    this.state.isAdmin = true;
+    this.state.isMain = false;
   };
 
   setFaceID = val => {
@@ -76,6 +86,36 @@ class InputData {
     return this.state.isLoading;
   }
 
+  setIsMain = val => {
+    this.state.isMain = val;
+  };
+
+  get getIsMain() {
+    return this.state.isMain;
+  }
+
+  setIsMainAPI = val => {
+    this.state.isMainAPI = val;
+  };
+
+  get getIsMainAPI() {
+    return this.state.isMainAPI;
+  }
+
+  setIsTrainAPI = val => {
+    this.state.isTrainAPI = val;
+  };
+
+  get getIsTrainAPI() {
+    return this.state.isTrainAPI;
+  }
+  setIsAdmin = val => {
+    this.state.isAdmin = val;
+  };
+
+  get getIsAdmin() {
+    return this.state.isAdmin;
+  }
   constructor() {
     makeObservable(this, {
       state: observable,
@@ -94,8 +134,16 @@ class InputData {
 
       setName: action,
       getName: computed,
+      setIsAdmin: action,
+      getIsAdmin: computed,
+      setIsMain: action,
+      getIsMain: computed,
+      setIsMainAPI: action,
+      getIsMainAPI: computed,
+      setIsTrainAPI: action,
+      getIsTrainAPI: computed,
     });
   }
 }
 
-export const FACE_STORE = new InputData();
+export const ADD_FACES_STORE = new InputData();

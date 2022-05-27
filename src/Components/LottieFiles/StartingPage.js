@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import LottieFile from '../../res/Lottie/Starting_RecognitionPage.json';
 
+//Lottie for face recognition screen
 const LoadingScreen = () => {
   return (
     <View
