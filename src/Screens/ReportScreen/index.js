@@ -15,15 +15,17 @@ import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
 //Report screen showing the map with summary of identified
 //suspect in various locations where application is used
 const ReportScreen = observer(({navigation}) => {
-  //Call API to get suspect summary
+  //Call API to get suspect
+
   useEffect(() => {
+    console.log('Main', SUSPECT_STORE.getIsMainAPI);
     if (!SUSPECT_STORE.getIsMainAPI) {
       ReportSummaryAPI();
     }
-  });
+  }, [SUSPECT_STORE.getIsMainAPI]);
   return (
     <View style={styles.MainContainer}>
-      <Header headerText="Suspects Summary" toolTip={H.STAT} />
+      <Header headerText="Suspect Statistics" toolTip={H.STAT} />
       {SUSPECT_STORE.getIsLoading ? (
         <LoadLottie lottieType="Loading" />
       ) : (

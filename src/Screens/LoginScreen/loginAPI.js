@@ -56,7 +56,7 @@ const setUserData = (userData, username) => {
   USER_STORE.setUserType(userData[14]);
   USER_STORE.setDept(userData[17]);
   USER_STORE.setEmail(userData[15]);
-  USER_STORE.setLocation_ID(userData[19]);
+  USER_STORE.setLocation_ID(userData[19].toString());
 
   AsyncStorage.setItem(U.USER_TYPE, USER_STORE.getUserType);
   AsyncStorage.setItem(U.USER_KEY, username);

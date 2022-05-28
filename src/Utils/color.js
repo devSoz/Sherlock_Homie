@@ -23,3 +23,4 @@ export const Error = 'red';
 export const TextBoxColor = '#1e63b9';
 export const BorderColor = 'gray';
 export const LightText = '#dddddd';
+export const ContainerColor = 'rgba(241,234,234,1)';

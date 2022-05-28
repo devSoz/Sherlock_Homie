@@ -43,7 +43,7 @@ const App: () => Node = () => {
         )
       }
       <Tab.Screen
-        name="Summary"
+        name="Statistics"
         component={Report}
         options={{
           headerShown: false,

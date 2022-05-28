@@ -98,6 +98,7 @@ const styles = ScaledSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: colors.ContainerColor,
     alignItems: 'center',
     backgroundColor: '#ccc',
   },

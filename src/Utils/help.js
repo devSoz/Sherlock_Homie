@@ -1,12 +1,12 @@
-export const RECOGNIZE = 'REcognize';
+export const RECOGNIZE = 'Recognize';
 export const ADD_1 =
-  ' AnimatedComponentWrapper (at src/index.native.tsx:281)in MaybeFreeze (at src/index.native.tsx:280)';
+  'Enter details in the text box or choose from the drop-down box.\n\nSwipe left to navigate to next page.\nClick on back button to cancel and navigate back to main screen.';
 export const ADD_2 =
-  'https://us.123rf.com/450wm/pandavector/pandavector1901/pandavector190105594/126045801-isolated-\nobject-of-avatar-and-dummy-icon-collection-of-avatar-and-\nimage-vector-icon-for-stock-.jpg?ver=6';
+  'Enter Identification and other details. \n\n Enter Height and weight with units.\n\nSwipe left to navigate to next page.\nClick on back button to cancel and navigate back to main screen.';
 export const ADD_3 =
-  'https://us.123rf.com/450wm/pandavector/pandavector1901/pandavector190105594/126045801-isolated-\nobject-of-avatar-and-dummy-icon-collection-of-avatar-and-\nimage-vector-icon-for-stock-.jpg?ver=6';
+  'Enter Additional details in numbers. \n\n Choose yes if flight risk.\n\nSwipe left to navigate to next page.\nClick on back button to cancel and navigate back to main screen.';
 export const ADD_4 =
-  'https://us.123rf.com/450wm/pandavector/pandavector1901/pandavector190105594/126045801-isolated-\nobject-of-avatar-and-dummy-icon-collection-of-avatar-and-\nimage-vector-icon-for-stock-.jpg?ver=6';
+  'Enter URL of the criminal pictures and charge sheet \n\n And click on submit button to add in criminal data. \nSwipe left to navigate to next page.\nClick on back button to cancel and navigate back to main screen.\n\nYou can train the data by clicking on Train data from the main screen';
 export const STAT = 'stat';
 export const STAT_DETAIL = 'stat';
 export const PROFILE = 'stat';

@@ -10,7 +10,6 @@ import {observer} from 'mobx-react';
 
 //Primary navigator (Refer USER_STORE for details fo the flag variables)
 const Navigator = observer(() => {
-  console.log('nav', USER_STORE.getUserName);
   return (
     <NavigationContainer independent={true}>
       <RootStack.Navigator independent={true}>

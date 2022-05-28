@@ -29,7 +29,13 @@ const AdminNavigator = observer(() => {
             }}
           />
         ) : (
-          <></>
+          <RootStack.Screen
+            name="Admin"
+            component={Admin}
+            options={{
+              headerShown: false,
+            }}
+          />
         )}
       </RootStack.Navigator>
     </NavigationContainer>
