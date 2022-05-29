@@ -10,7 +10,6 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import StartingPage from '../../Components/LottieFiles/StartingPage';
 import {observer} from 'mobx-react';
-import Line from '../../Components/Line';
 import React, {useState} from 'react';
 import {FACE_STORE} from '../../Mobx/FACE_STORE';
 import {SUSPECT_STORE} from '../../Mobx/SUSPECT_STORE';
@@ -20,7 +19,7 @@ import LoadLottie from '../../Components/LottieFiles/LoadLottie';
 import {getSimilarFacesAPI} from './SimilarFacesAPI';
 import {OPTIONS} from '../../Utils/Util';
 import * as UI from '../../Utils/UIConstants';
-import {NATIONALITY, FLIGHT, GENDER} from '../../Utils/PickerList';
+import {NATIONALITY, GENDER} from '../../Utils/PickerList';
 import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
 
 const SimilarFaces = observer(() => {
@@ -193,7 +192,7 @@ const SimilarFaces = observer(() => {
                     styles.text,
                     {
                       flexWrap: 'wrap',
-                      width: s(200),
+                      width: s(300),
                     },
                   ]}>
                   {FACE_STORE.getFaceData.marks}

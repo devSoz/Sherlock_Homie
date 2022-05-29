@@ -12,6 +12,7 @@ import {USER_STORE} from '../../Mobx/USER_STORE';
 import RNFetchBlob from 'rn-fetch-blob';
 import {ReportAPI} from './Report';
 import {ScaledSheet, s, vs, ms} from 'react-native-size-matters';
+import * as H from '../../Utils/help';
 
 const actions = [
   {
@@ -79,7 +80,7 @@ const FaceRecognition = observer(() => {
   return (
     <View style={styles.container}>
       <View style={[styles.header, {flexDirection: 'row'}]}>
-        <Header headerText="Scan Face" toolTip="sample tool" />
+        <Header headerText="Scan Face" toolTip={H.RECOGNIZE} />
       </View>
       <SimilarFaces />
       {FACE_STORE.getIsIdentified && (
